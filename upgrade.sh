@@ -3,6 +3,11 @@
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
+if [[ $EUID != 0 ]]; then
+    echo -e "\n${title}${bold}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n"
+    exit 1
+fi
+
 function _time() {
 endtime=$(date +%s)
 timeused=$(( $endtime - $starttime ))
