@@ -216,19 +216,18 @@ exit 0 ; }
 
 function _oscheck() {
 if [[ $SysSupport == 1 ]]; then
-    echo -e "\n${green}${bold}Excited! Your operating system is already the latest version. Let's make some big news ... ${normal}"
+    echo -e "\n${green}${bold}Excited! Your operating system is already the latest version. Let's make some big news ... ${normal}\n"
 elif [[ $SysSupport =~ (2|3|4|5) ]]; then
     [[ $SysSupport == 2 ]] && upgradeA
     [[ $SysSupport == 3 ]] && upgradeB
     [[ $SysSupport == 4 ]] && upgradeC
     [[ $SysSupport == 5 ]] && upgradeD
 else
-    echo -e "\n${bold}${red}Too young too simple! Only Debian 7/8/9 and Ubuntu 14.04/16.04 is supported by this script${normal}"
+    echo -e "\n${bold}${red}Too young too simple! Only Debian 7/8/9 and Ubuntu 14.04/16.04 is supported by this script${normal}\n"
 fi ; }
 
-
 if [[ $EUID != 0 ]]; then
-    echo -e "\n${title}${bold}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n"
+    echo -e "\n${bold}${red}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n"
 else
     _oscheck
 fi
