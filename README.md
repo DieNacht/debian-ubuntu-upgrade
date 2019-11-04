@@ -1,5 +1,5 @@
 # debian-ubuntu-upgrade
-Inspired by inexistence
+Inspired by inexistence: https://github.com/Aniverse/inexistence
 
 ## Usage
 
