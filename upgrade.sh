@@ -3,6 +3,22 @@
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
+function _time() {
+endtime=$(date +%s)
+timeused=$(( $endtime - $starttime ))
+if [[ $timeused -gt 60 && $timeused -lt 3600 ]]; then
+    timeusedmin=$(expr $timeused / 60)
+    timeusedsec=$(expr $timeused % 60)
+    echo -e " ${baiqingse}${bold}The $timeWORK took about ${timeusedmin} min ${timeusedsec} sec${normal}"
+elif [[ $timeused -ge 3600 ]]; then
+    timeusedhour=$(expr $timeused / 3600)
+    timeusedmin=$(expr $(expr $timeused % 3600) / 60)
+    timeusedsec=$(expr $timeused % 60)
+    echo -e " ${baiqingse}${bold}The $timeWORK took about ${timeusedhour} hour ${timeusedmin} min ${timeusedsec} sec${normal}"
+else
+    echo -e " ${baiqingse}${bold}The $timeWORK took about ${timeused} sec${normal}"
+fi ; }
+
 function _colors() {
 black=$(tput setaf 0)   ; red=$(tput setaf 1)          ; green=$(tput setaf 2)   ; yellow=$(tput setaf 3);  bold=$(tput bold)
 blue=$(tput setaf 4)    ; magenta=$(tput setaf 5)      ; cyan=$(tput setaf 6)    ; white=$(tput setaf 7) ;  normal=$(tput sgr0)
@@ -188,7 +204,7 @@ _distro_upgrade_upgrade
 timeWORK=upgradation
 echo -e "\n\n\n" ; _time
 
-[[ $DeBUG != 1 ]] && echo -e "\n\n ${shanshuo}${baihongse}Reboot system now. You need to rerun this script after reboot${normal}\n\n\n\n\n"
+echo -e "\n\n ${shanshuo}${baihongse}Reboot system now. You need to rerun this script after reboot${normal}\n\n\n\n\n"
 
 sleep 5
 reboot -f
@@ -198,8 +214,15 @@ sleep 5
 kill -s TERM $TOP_PID
 exit 0 ; }
 
-[[ $SysSupport == 2 ]] && upgradeA
-[[ $SysSupport == 3 ]] && upgradeB
-[[ $SysSupport == 4 ]] && upgradeC
-[[ $SysSupport == 5 ]] && upgradeD
-[[ $SysSupport == 1 ]] && echo -e "\n${green}${bold}Excited! Your operating system is already the latest version. Let's make some big news ... ${normal}"
+function _oscheck() {
+if [[ $SysSupport == 1 ]]; then
+    echo -e "\n${green}${bold}Excited! Your operating system is already the latest version. Let's make some big news ... ${normal}"
+elif [[ $SysSupport =~ (2|3|4|5) ]]; then
+    [[ $SysSupport == 2 ]] && upgradeA
+    [[ $SysSupport == 3 ]] && upgradeB
+    [[ $SysSupport == 4 ]] && upgradeC
+    [[ $SysSupport == 5 ]] && upgradeD
+else
+    echo -e "\n${bold}${red}Too young too simple! Only Debian 7/8/9 and Ubuntu 14.04/16.04 is supported by this script${normal}"
+fi ; }
+_oscheck
