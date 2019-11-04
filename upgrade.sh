@@ -202,3 +202,4 @@ exit 0 ; }
 [[ $SysSupport == 3 ]] && upgradeB
 [[ $SysSupport == 4 ]] && upgradeC
 [[ $SysSupport == 5 ]] && upgradeD
+[[ $SysSupport == 1 ]] && echo -e "\n${green}${bold}Excited! Your operating system is already the latest version. Let's make some big news ... ${normal}"
