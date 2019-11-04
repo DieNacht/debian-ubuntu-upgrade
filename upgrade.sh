@@ -3,11 +3,6 @@
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
-if [[ $EUID != 0 ]]; then
-    echo -e "\n${title}${bold}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n"
-    exit 1
-fi
-
 function _time() {
 endtime=$(date +%s)
 timeused=$(( $endtime - $starttime ))
@@ -230,4 +225,10 @@ elif [[ $SysSupport =~ (2|3|4|5) ]]; then
 else
     echo -e "\n${bold}${red}Too young too simple! Only Debian 7/8/9 and Ubuntu 14.04/16.04 is supported by this script${normal}"
 fi ; }
-_oscheck
+
+
+if [[ $EUID != 0 ]]; then
+    echo -e "\n${title}${bold}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n"
+else
+    _oscheck
+fi
