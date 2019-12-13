@@ -146,6 +146,8 @@ function distro_upgrade() {
         echo -e "\n\n\n${baihongse}executing dist-upgrade${normal}\n\n\n"
         apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade
     done
+    apt-get -fuy --force-yes autoremove
+    apt-get --force-yes clean
 
     timeWORK=upgradation
     echo -e "\n\n\n" ; _time
