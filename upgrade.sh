@@ -133,11 +133,13 @@ function distro_upgrade() {
     echo -e "${baihongse}executing update${normal}\n"
 
     ((SysSupport = SysSupport - upgrade_version_gap))
+    UPGRADE_CODENAME_OLD=RELEASE
     while [[ $upgrade_version_gap != 0 ]] ; do
         ((SysSupport = SysSupport + 1))
         ((upgrade_version_gap = upgrade_version_gap - 1))
         distrocode
-        sed -i "s/RELEASE/$UPGRADE_CODENAME/g" /etc/apt/sources.list
+        sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list
+        UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
         apt-get -y update
         echo -e "\n\n\n${baihongse}executing upgrade${normal}\n\n\n"
         apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade
