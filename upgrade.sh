@@ -112,14 +112,11 @@ function distro_upgrade() {
 
     # apt-get -f install
     changesource
+    apt-get -y update
+    apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade
     echo -e "\n${baihongse}executing apt-listchanges remove${normal}\n"
     apt-get remove apt-listchanges --assume-yes --force-yes
     echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
-    sed -i "s/$CODENAME/$UPGRADE_CODENAME/g" /etc/apt/sources.list
-    echo -e "${baihongse}executing autoremove${normal}\n"
-    apt-get -fuy --force-yes autoremove
-    echo -e "${baihongse}executing clean${normal}\n"
-    apt-get --force-yes clean
     if [[ $_change_aptlist == Yes ]]; then
         echo -e "${baihongse}executing apt sources change${normal}\n"
         cp /etc/apt/sources.list /etc/apt/sources.list."$(date "+%Y.%m.%d.%H.%M.%S")".bak
@@ -144,7 +141,9 @@ function distro_upgrade() {
         echo -e "\n\n\n${baihongse}executing dist-upgrade${normal}\n\n\n"
         apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade
     done
+    echo -e "${baihongse}executing autoremove${normal}\n"
     apt-get -fuy --force-yes autoremove
+    echo -e "${baihongse}executing clean${normal}\n"
     apt-get --force-yes clean
 
     timeWORK=upgradation
