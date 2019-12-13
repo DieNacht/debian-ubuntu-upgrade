@@ -81,8 +81,6 @@ function upgrade(){
         echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
         distro_upgrade | tee /etc/distro_upgrade.log
     elif [[ $upgrade_version_gap = $max_version_gap ]]; then
-        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
-        distrocode
         echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
         distro_upgrade | tee /etc/distro_upgrade.log
     else
