@@ -21,17 +21,10 @@ function _time() {
 }
 
 function _colors() {
-    black=$(tput setaf 0)   ; red=$(tput setaf 1)          ; green=$(tput setaf 2)   ; yellow=$(tput setaf 3);  bold=$(tput bold)
-    blue=$(tput setaf 4)    ; magenta=$(tput setaf 5)      ; cyan=$(tput setaf 6)    ; white=$(tput setaf 7) ;  normal=$(tput sgr0)
-    on_black=$(tput setab 0); on_red=$(tput setab 1)       ; on_green=$(tput setab 2); on_yellow=$(tput setab 3)
-    on_blue=$(tput setab 4) ; on_magenta=$(tput setab 5)   ; on_cyan=$(tput setab 6) ; on_white=$(tput setab 7)
-    shanshuo=$(tput blink)  ; wuguangbiao=$(tput civis)    ; guangbiao=$(tput cnorm) ; jiacu=${normal}${bold}
-    underline=$(tput smul)  ; reset_underline=$(tput rmul) ; dim=$(tput dim)
-    standout=$(tput smso)   ; reset_standout=$(tput rmso)  ; title=${standout}
-    baihuangse=${white}${on_yellow}; bailanse=${white}${on_blue} ; bailvse=${white}${on_green}
-    baiqingse=${white}${on_cyan}   ; baihongse=${white}${on_red} ; baizise=${white}${on_magenta}
-    heibaise=${black}${on_white}   ; heihuangse=${on_yellow}${black}
-    CW="${bold}${baihongse} ERROR ${jiacu}";ZY="${baihongse}${bold} ATTENTION ${jiacu}";JG="${baihongse}${bold} WARNING ${jiacu}" ;
+    red=$(tput setaf 1)          ; green=$(tput setaf 2)        ; yellow=$(tput setaf 3)  ; bold=$(tput bold)
+    magenta=$(tput setaf 5)      ; cyan=$(tput setaf 6)         ; white=$(tput setaf 7)   ; normal=$(tput sgr0)
+    on_red=$(tput setab 1)       ; on_magenta=$(tput setab 5)   ; on_cyan=$(tput setab 6) ; shanshuo=$(tput blink)
+    baiqingse=${white}${on_cyan} ; baihongse=${white}${on_red}  ; baizise=${white}${on_magenta}
 }
 _colors
 
@@ -114,18 +107,18 @@ function distro_upgrade() {
     changesource
     apt-get -y update
     apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade
-    echo -e "\n${baihongse}executing apt-listchanges remove${normal}\n"
+    echo -e "\n\n\n${baihongse}executing apt-listchanges remove${normal}\n\n\n"
     apt-get remove apt-listchanges --assume-yes --force-yes
     echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
     if [[ $_change_aptlist == Yes ]]; then
-        echo -e "${baihongse}executing apt sources change${normal}\n"
+        echo -e "\n\n\n${baihongse}executing apt sources change${normal}\n\n\n"
         cp /etc/apt/sources.list /etc/apt/sources.list."$(date "+%Y.%m.%d.%H.%M.%S")".bak
         wget --no-check-certificate -O /etc/apt/sources.list https://github.com/Aniverse/inexistence/raw/master/00.Installation/template/$DISTROL.apt.sources
         [[ $DISTROL == debian ]] && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117
     else
         sed -i "s/$CODENAME/RELEASE/g" /etc/apt/sources.list
     fi
-    echo -e "${baihongse}executing update${normal}\n"
+    echo -e "\n${baihongse}executing update${normal}\n"
 
     ((SysSupport = SysSupport - upgrade_version_gap))
     UPGRADE_CODENAME_OLD=RELEASE
@@ -141,9 +134,9 @@ function distro_upgrade() {
         echo -e "\n\n\n${baihongse}executing dist-upgrade${normal}\n\n\n"
         apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade
     done
-    echo -e "${baihongse}executing autoremove${normal}\n"
+    echo -e "\n\n\n${baihongse}executing autoremove${normal}\n\n\n"
     apt-get -fuy --force-yes autoremove
-    echo -e "${baihongse}executing clean${normal}\n"
+    echo -e "\n\n\n${baihongse}executing clean${normal}\n\n\n"
     apt-get --force-yes clean
 
     timeWORK=upgradation
