@@ -33,18 +33,21 @@ DISTRO=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
 DISTROL=$(echo $DISTRO | tr 'A-Z' 'a-z')
 CODENAME=$(cat /etc/os-release | grep VERSION= | tr '[A-Z]' '[a-z]' | sed 's/\"\|(\|)\|[0-9.,]\|version\|lts//g' | awk '{print $2}')
 grep buster /etc/os-release -q && CODENAME=buster
+grep focal /etc/os-release -q && CODENAME=focal
 [[ $DISTRO == Ubuntu ]] && osversion=$(grep Ubuntu /etc/issue | head -1 | grep -oE  "[0-9.]+")
 [[ $DISTRO == Debian ]] && osversion=$(cat /etc/debian_version)
-[[ $CODENAME  ==  xenial  ]] && SysSupport=13
-[[ $CODENAME  ==  trusty  ]] && SysSupport=12
+[[ $CODENAME  ==  bionic  ]] && SysSupport=13
+[[ $CODENAME  ==  xenial  ]] && SysSupport=12
+[[ $CODENAME  ==  trusty  ]] && SysSupport=11
 [[ $CODENAME  ==  stretch ]] && SysSupport=23
 [[ $CODENAME  ==  jessie  ]] && SysSupport=22
 [[ $CODENAME  ==  wheezy  ]] && SysSupport=21
 
 
 function distrocode (){
-    [[ $SysSupport == 14  ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic ; }
-    [[ $SysSupport == 13  ]] && { UPGRADE_DISTRO="Ubuntu 16.04" ; UPGRADE_CODENAME=xenial ; }
+    [[ $SysSupport == 14  ]] && { UPGRADE_DISTRO="Ubuntu 20.04" ; UPGRADE_CODENAME=focal ; }
+    [[ $SysSupport == 13  ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic ; }
+    [[ $SysSupport == 12  ]] && { UPGRADE_DISTRO="Ubuntu 16.04" ; UPGRADE_CODENAME=xenial ; }    
     [[ $SysSupport == 24  ]] && { UPGRADE_DISTRO="Debian 10" ; UPGRADE_CODENAME=buster ; }
     [[ $SysSupport == 23  ]] && { UPGRADE_DISTRO="Debian 9" ; UPGRADE_CODENAME=stretch ; }
     [[ $SysSupport == 22  ]] && { UPGRADE_DISTRO="Debian 8" ; UPGRADE_CODENAME=jessie ; } ;
