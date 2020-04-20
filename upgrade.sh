@@ -181,7 +181,7 @@ function distro_upgrade() {
     apt-get --force-yes clean >> "$OutputLOG" 2>&1 & spinner $!
     echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
 
-    _time upgradation
+    echo && _time upgradation
 
     echo -e "\n${shanshuo}${baihongse}Reboot system now. You need to rerun this script after reboot${normal}\n"
 
