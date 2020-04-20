@@ -1,86 +1,88 @@
 #!/bin/bash
+#
+# https://github.com/DieNacht/debian-ubuntu-upgrade
+# Author: DieNacht
+#
+# Thanks to amefs and Aniverse
 
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
-function _time() {
-    endtime=$(date +%s)
-    timeused=$(( $endtime - $starttime ))
-    if [[ $timeused -gt 60 && $timeused -lt 3600 ]]; then
-        timeusedmin=$(expr $timeused / 60)
-        timeusedsec=$(expr $timeused % 60)
-        echo -e " ${baiqingse}${bold}The $timeWORK took about ${timeusedmin} min ${timeusedsec} sec${normal}"
-    elif [[ $timeused -ge 3600 ]]; then
-        timeusedhour=$(expr $timeused / 3600)
-        timeusedmin=$(expr $(expr $timeused % 3600) / 60)
-        timeusedsec=$(expr $timeused % 60)
-        echo -e " ${baiqingse}${bold}The $timeWORK took about ${timeusedhour} hour ${timeusedmin} min ${timeusedsec} sec${normal}"
-    else
-        echo -e " ${baiqingse}${bold}The $timeWORK took about ${timeused} sec${normal}"
-    fi ;
-}
+if [[ -f /etc/inexistence/00.Installation/function ]]; then
+    source /etc/inexistence/00.Installation/function
+else
+    source <(wget -qO- https://github.com/Aniverse/inexistence/raw/master/00.Installation/function)
+fi
 
-function _colors() {
-    red=$(tput setaf 1)          ; green=$(tput setaf 2)        ; yellow=$(tput setaf 3)  ; bold=$(tput bold)
-    magenta=$(tput setaf 5)      ; cyan=$(tput setaf 6)         ; white=$(tput setaf 7)   ; normal=$(tput sgr0)
-    on_red=$(tput setab 1)       ; on_magenta=$(tput setab 5)   ; on_cyan=$(tput setab 6) ; shanshuo=$(tput blink)
-    baiqingse=${white}${on_cyan} ; baihongse=${white}${on_red}  ; baizise=${white}${on_magenta}
-}
-_colors
+set_variables_log_location
+check_var_OutputLOG
+debug_log_location
+cat_outputlog
 
 SysSupport=0
-DISTRO=$(awk -F'[= "]' '/PRETTY_NAME/{print $3}' /etc/os-release)
-DISTROL=$(echo $DISTRO | tr 'A-Z' 'a-z')
-CODENAME=$(cat /etc/os-release | grep VERSION= | tr '[A-Z]' '[a-z]' | sed 's/\"\|(\|)\|[0-9.,]\|version\|lts//g' | awk '{print $2}')
-grep buster /etc/os-release -q && CODENAME=buster
-grep focal /etc/os-release -q && CODENAME=focal
-[[ $DISTRO == Ubuntu ]] && osversion=$(grep Ubuntu /etc/issue | head -1 | grep -oE  "[0-9.]+")
-[[ $DISTRO == Debian ]] && osversion=$(cat /etc/debian_version)
-[[ $CODENAME  ==  bionic  ]] && SysSupport=13
-[[ $CODENAME  ==  xenial  ]] && SysSupport=12
-[[ $CODENAME  ==  trusty  ]] && SysSupport=11
-[[ $CODENAME  ==  stretch ]] && SysSupport=23
-[[ $CODENAME  ==  jessie  ]] && SysSupport=22
-[[ $CODENAME  ==  wheezy  ]] && SysSupport=21
+[[ $CODENAME  ==  bionic  ]] && SysSupport=3
+[[ $CODENAME  ==  xenial  ]] && SysSupport=2
+[[ $CODENAME  ==  trusty  ]] && SysSupport=1
+[[ $CODENAME  ==  stretch ]] && SysSupport=3
+[[ $CODENAME  ==  jessie  ]] && SysSupport=2
+[[ $CODENAME  ==  wheezy  ]] && SysSupport=1
 
 
-function distrocode (){
-    [[ $SysSupport == 14  ]] && { UPGRADE_DISTRO="Ubuntu 20.04" ; UPGRADE_CODENAME=focal ; }
-    [[ $SysSupport == 13  ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic ; }
-    [[ $SysSupport == 12  ]] && { UPGRADE_DISTRO="Ubuntu 16.04" ; UPGRADE_CODENAME=xenial ; }    
-    [[ $SysSupport == 24  ]] && { UPGRADE_DISTRO="Debian 10" ; UPGRADE_CODENAME=buster ; }
-    [[ $SysSupport == 23  ]] && { UPGRADE_DISTRO="Debian 9" ; UPGRADE_CODENAME=stretch ; }
-    [[ $SysSupport == 22  ]] && { UPGRADE_DISTRO="Debian 8" ; UPGRADE_CODENAME=jessie ; } ;
+function _SysSupport_to_DisrtoCodename (){
+    [[ $SysSupport == 4  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 20.04" ; UPGRADE_CODENAME=focal   ; }
+    [[ $SysSupport == 3  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic  ; }
+    [[ $SysSupport == 2  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 16.04" ; UPGRADE_CODENAME=xenial  ; }
+    [[ $SysSupport == 4  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 10"    ; UPGRADE_CODENAME=buster  ; }
+    [[ $SysSupport == 3  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 9"     ; UPGRADE_CODENAME=stretch ; }
+    [[ $SysSupport == 2  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 8"     ; UPGRADE_CODENAME=jessie  ; } ;
 }
 
-function upgrade(){
-    echo -e "\nYou are now running ${cyan}${bold}$DISTRO $osversion${normal}"
-    count=${SysSupport:0-1:1}
+function _ask_upgrade(){
+
+    count=$SysSupport
     ((max_version_gap = 4 - count))
     version_gap=0
     echo
-    echo -e "${green}00)${normal} Do NOT upgrade system and exit script"
+
     while [[ $version_gap != $max_version_gap ]] ; do
        ((SysSupport = SysSupport + 1))
        ((version_gap = version_gap + 1))
-       distrocode
+       _SysSupport_to_DisrtoCodename
        echo -e "${green}0$version_gap)${normal} Upgrade to ${cyan}$UPGRADE_DISTRO${normal}"
     done
-    count=${SysSupport:0-1:1}
-    echo -ne "${bold}${yellow}Would you like to upgrade your system?${normal} (Default ${cyan}00${normal}): " ; read -e responce
+    ((version_gap = version_gap + 1))
+    echo -e "${green}0$version_gap)${normal} Do NOT upgrade system and exit script\n"
+
+    count=$SysSupport
+    echo -ne "${bold}${yellow}Would you like to upgrade your system?${normal} (Default ${cyan}0$version_gap${normal}): " ; read -e responce
+    ((version_gap = version_gap - 1))
     upgrade_version_gap=${responce:0-1:1}
-    if [[ $upgrade_version_gap < 1 ]]; then
+
+#    if [[ $upgrade_version_gap < 1 ]]; then
+#        echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
+#    elif [[ $upgrade_version_gap < $max_version_gap ]]; then
+#        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
+#        _SysSupport_to_DisrtoCodename
+#        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
+#        distro_upgrade | tee /etc/distro_upgrade.log
+#    elif [[ $upgrade_version_gap = $max_version_gap ]]; then
+#        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
+#        distro_upgrade | tee /etc/distro_upgrade.log
+#    else
+#        echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
+#    fi
+
+    [ -z "$(echo $upgrade_version_gap | sed -n "/^[0-9]\+$/p")" ] && upgradable=0
+    [[ $upgrade_version_gap == 0 ]] && upgradable=0
+    [[ $upgrade_version_gap > $max_version_gap ]] && upgradable=0
+
+    if [[ $upgradable == 0 ]]; then
         echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
-    elif [[ $upgrade_version_gap < $max_version_gap ]]; then
-        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
-        distrocode
-        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
-        distro_upgrade | tee /etc/distro_upgrade.log
-    elif [[ $upgrade_version_gap = $max_version_gap ]]; then
-        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
-        distro_upgrade | tee /etc/distro_upgrade.log
     else
-        echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
+        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
+        _SysSupport_to_DisrtoCodename
+        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
+        distro_upgrade | tee /etc/distro_upgrade.log
     fi ;
 }
 
@@ -108,10 +110,22 @@ function distro_upgrade() {
 
     # apt-get -f install
     changesource
-    apt-get -y update
-    apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade
-    echo -e "\n\n\n${baihongse}executing apt-listchanges remove${normal}\n\n\n"
-    apt-get remove apt-listchanges --assume-yes --force-yes
+
+    echo_task "${baihongse}Executing Pre-Upgrade Process${normal}"
+    echo && echo
+
+    echo_task "Preparation"
+    apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
+    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+    echo_task "Executing APT Upgrade"
+    apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 & spinner $!
+    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+    echo_task "Executing APT-Listchanges Remove"
+    apt-get remove apt-listchanges --assume-yes --force-yes >> "$OutputLOG" 2>&1 & spinner $!
+    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
     echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
     if [[ $_change_aptlist == Yes ]]; then
         echo -e "\n\n\n${baihongse}executing apt sources change${normal}\n\n\n"
@@ -121,31 +135,55 @@ function distro_upgrade() {
     else
         sed -i "s/$CODENAME/RELEASE/g" /etc/apt/sources.list
     fi
-    echo -e "\n${baihongse}executing update${normal}\n"
+
+    echo
+    echo_task "${baihongse}Executing Upgrade Process${normal}"
+    echo
 
     ((SysSupport = SysSupport - upgrade_version_gap))
     UPGRADE_CODENAME_OLD=RELEASE
     while [[ $upgrade_version_gap != 0 ]] ; do
+
         ((SysSupport = SysSupport + 1))
         ((upgrade_version_gap = upgrade_version_gap - 1))
-        distrocode
-        sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list
+        _SysSupport_to_DisrtoCodename
+
+        echo
+        echo_task "Upgrade to ${cyan}${bold}${UPGRADE_DISTRO}${normal}"
+        echo
+
+        echo_task "Preparation"
+        sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
-        apt-get -y update
-        echo -e "\n\n\n${baihongse}executing upgrade${normal}\n\n\n"
-        apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade
-        echo -e "\n\n\n${baihongse}executing dist-upgrade${normal}\n\n\n"
-        apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade
+        apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
+        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+        echo_task "Executing APT Upgrade"
+        apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 & spinner $!
+        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+        echo_task "Executing APT Dist-Upgrade"
+        apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade >> "$OutputLOG" 2>&1 & spinner $!
+        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
     done
-    echo -e "\n\n\n${baihongse}executing autoremove${normal}\n\n\n"
-    apt-get -fuy --force-yes autoremove
-    echo -e "\n\n\n${baihongse}executing clean${normal}\n\n\n"
-    apt-get --force-yes clean
 
-    timeWORK=upgradation
-    echo -e "\n\n\n" ; _time
+    echo
+    echo_task "${baihongse}Executing Post-Upgrade Process${normal}"
+    echo
 
-    echo -e "\n\n ${shanshuo}${baihongse}Reboot system now. You need to rerun this script after reboot${normal}\n\n\n\n\n"
+    echo
+    echo_task "Executing APT Autoremove"
+    apt-get -fuy --force-yes autoremove >> "$OutputLOG" 2>&1 & spinner $!
+    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+    echo_task "Executing APT Clean"
+    apt-get --force-yes clean >> "$OutputLOG" 2>&1 & spinner $!
+    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+    _time upgradation
+
+    echo -e "\n${shanshuo}${baihongse}Reboot system now. You need to rerun this script after reboot${normal}\n"
 
     sleep 5
     reboot -f
@@ -157,10 +195,12 @@ function distro_upgrade() {
 }
 
 function _oscheck() {
-    if [[ $CODENAME =~ (bionic|buster) ]]; then
-        echo -e "\n${green}${bold}Excited! Your operating system is already the latest version. Let's make some big news ... ${normal}\n"
+    upgradable=0
+    if [[ $SysSupport == 4 ]]; then
+        echo -e "\n${green}${bold}Excited! Your operating system is already the latest version.${normal}\n"
     elif [[ $SysSupport != 0 ]]; then
-        upgrade
+        echo -e "\nYou are now running ${cyan}${bold}$DISTRO $osversion${normal}"
+        upgradable=1
     else
         echo -e "\n${bold}${red}Too young too simple! Only Debian 7/8/9 and Ubuntu 14.04/16.04 is supported by this script${normal}\n"
     fi ;
@@ -170,4 +210,5 @@ if [[ $EUID != 0 ]]; then
     echo -e "\n${bold}${red}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n"
 else
     _oscheck
+    [[ $upgradable == 1 ]] && _ask_upgrade
 fi
