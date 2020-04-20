@@ -1,4 +1,4 @@
-# debian-ubuntu-upgrade
+# Debian/Ubuntu-Upgrade
 > Inspired by inexistence: https://github.com/Aniverse/inexistence
 
 > ALSO Inspired by quickbox-lite: https://github.com/amefs/quickbox-lite
@@ -19,7 +19,7 @@ bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubunt
 bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --version Version_Codename [--mirror Source_Loaction]
 ```
 
-## Change Source Mode
+## Non-Interactive Change Source Mode
 
 ```
 bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --mirror Source_Loaction
