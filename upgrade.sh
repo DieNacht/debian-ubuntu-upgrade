@@ -328,6 +328,7 @@ else
         echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
 
         echo_task "Excuting Source Update"
+        sed -i "s/RELEASE/$CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
         echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
         echo
