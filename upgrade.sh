@@ -31,37 +31,6 @@ check_var_OutputLOG
 debug_log_location
 cat_outputlog
 
-################################################################################################ Set Variables 2
-
-SysSupport=0
-[[ $CODENAME  ==  focal   ]] && SysSupport=4
-[[ $CODENAME  ==  bionic  ]] && SysSupport=3
-[[ $CODENAME  ==  xenial  ]] && SysSupport=2
-[[ $CODENAME  ==  trusty  ]] && SysSupport=1
-[[ $CODENAME  ==  buster  ]] && SysSupport=4
-[[ $CODENAME  ==  stretch ]] && SysSupport=3
-[[ $CODENAME  ==  jessie  ]] && SysSupport=2
-[[ $CODENAME  ==  wheezy  ]] && SysSupport=1
-
-if [[ -n $version ]]; then
-    count=0
-    [[ $version  ==  focal   ]] && count=4
-    [[ $version  ==  bionic  ]] && count=3
-    [[ $version  ==  xenial  ]] && count=2
-    [[ $version  ==  buster  ]] && count=4
-    [[ $version  ==  stretch ]] && count=3
-    [[ $version  ==  jessie  ]] && count=2
-
-    ((upgrade_version_gap = count - SysSupport))
-
-    [[ ! $upgrade_version_gap > 0 ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
-    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
-    [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
-    [[ -z $mirror ]] && mirror=no ;
-
-fi
-[[ -n $mirror ]] && [[ ! $mirror =~  (us|au|cn|fr|de|jp|ru|uk|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
-
 ################################################################################################ Sub Functions
 
 function _SysSupport_to_DisrtoCodename (){
@@ -318,6 +287,55 @@ function _oscheck() {
         echo -e "\n${bold}${red}Too young too simple! Only Debian 7/8/9 and Ubuntu 14.04/16.04 is supported by this script${normal}\n"
     fi ;
 }
+
+################################################################################################ Set Variables 2
+
+SysSupport=0
+[[ $CODENAME  ==  focal   ]] && SysSupport=4
+[[ $CODENAME  ==  bionic  ]] && SysSupport=3
+[[ $CODENAME  ==  xenial  ]] && SysSupport=2
+[[ $CODENAME  ==  trusty  ]] && SysSupport=1
+[[ $CODENAME  ==  buster  ]] && SysSupport=4
+[[ $CODENAME  ==  stretch ]] && SysSupport=3
+[[ $CODENAME  ==  jessie  ]] && SysSupport=2
+[[ $CODENAME  ==  wheezy  ]] && SysSupport=1
+
+if [[ -n $version ]]; then
+    count=0
+    [[ $version  ==  focal   ]] && count=4
+    [[ $version  ==  bionic  ]] && count=3
+    [[ $version  ==  xenial  ]] && count=2
+    [[ $version  ==  buster  ]] && count=4
+    [[ $version  ==  stretch ]] && count=3
+    [[ $version  ==  jessie  ]] && count=2
+
+    ((upgrade_version_gap = count - SysSupport))
+
+    [[ ! $upgrade_version_gap > 0 ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
+    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
+    [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
+    [[ -z $mirror ]] && mirror=no ;
+else
+    if [[ -n $mirror ]] && [[ $mirror =~  (us|au|cn|fr|de|jp|ru|uk)  ]]; then
+        [[ $DISTRO == Debian ]] && [[ $SysSupport == 1 ]] && force_change_source=yes &&  { echo -e "\n${baihongse}ERROR: No mirror could be used to change${normal}\n" ; exit 1 ; }
+        _ask_source
+
+        echo_task "${baihongse}Change the Source List and Update${normal}"
+        echo && echo
+
+        echo_task "Change the Source List"
+        _change_source & spinner $!
+        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+        echo_task "Excuting Source Update"
+        apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
+        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+        echo
+
+        exit 0
+    fi
+fi
+[[ -n $mirror ]] && [[ ! $mirror =~  (us|au|cn|fr|de|jp|ru|uk|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
 
 ################################################################################################ Main
 
