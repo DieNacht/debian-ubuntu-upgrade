@@ -12,10 +12,10 @@ OPTS=$(getopt -a -o v:m:l: --long version:,mirror:,logbase: -- "$@")
 eval set -- "$OPTS"
 
 while [ -n "$1" ] ; do case "$1" in
-    -v | --version    ) version="$2"               ; shift 2 ;;
-    -m | --mirror     ) mirror="$2" ; shift 2 ;;
-    -l | --logbase    ) LogTimes="$2"                           ; shift 2 ;;
-    -- ) shift ; break ;;
+    -v | --version    ) version="$2"  ; shift 2 ;;
+    -m | --mirror     ) mirror="$2"   ; shift 2 ;;
+    -l | --logbase    ) LogTimes="$2" ; shift 2 ;;
+    --    ) shift ; break ;;
 esac ; done
 
 ################################################################################################ Set Variables 1
@@ -48,40 +48,77 @@ function _ask_source(){
 
     if [[ -z $mirror ]]; then
         echo
-        echo -e "${blue}01)${normal} Change to ${cyan}United States ${normal}Source"
-        echo -e "${blue}02)${normal} Change to ${cyan}Australia ${normal}Source"
-        echo -e "${blue}03)${normal} Change to ${cyan}China ${normal}Source"
-        echo -e "${blue}04)${normal} Change to ${cyan}France ${normal}Source"
-        echo -e "${blue}05)${normal} Change to ${cyan}Germeny ${normal}Source"
-        echo -e "${blue}06)${normal} Change to ${cyan}Japan ${normal}Source"
-        echo -e "${blue}07)${normal} Change to ${cyan}Russia ${normal}Source"
-        echo -e "${blue}08)${normal} Change to ${cyan}United Kingdom ${normal}Source"
-        echo -e  "${red}09)${normal} Do NOT change the source list\n"
+        echo -e  "${green}01)${normal} Change to ${cyan}United States ${normal}Mirror"
+        echo -e  "${green}02)${normal} Change to ${cyan}Australia ${normal}Mirror"
+        echo -e  "${green}03)${normal} Change to ${cyan}China ${normal}Mirror"
+        echo -e  "${green}04)${normal} Change to ${cyan}France ${normal}Mirror"
+        echo -e  "${green}05)${normal} Change to ${cyan}Germeny ${normal}Mirror"
+        echo -e  "${green}06)${normal} Change to ${cyan}Japan ${normal}Mirror"
+        echo -e  "${green}07)${normal} Change to ${cyan}Russia ${normal}Mirror"
+        echo -e  "${green}08)${normal} Change to ${cyan}United Kingdom ${normal}Mirror"
+        echo -e   "${blue}11)${normal} Change to ${cyan}TUNA ${normal}Mirror"
+        echo -e   "${blue}12)${normal} Change to ${cyan}USTC ${normal}Mirror"
+        echo -e   "${blue}13)${normal} Change to ${cyan}Aliyun ${normal}Mirror"
+        echo -e   "${blue}14)${normal} Change to ${cyan}Netease(163) ${normal}Mirror"
+        echo -e   "${blue}15)${normal} Change to ${cyan}Huawei Cloud ${normal}Mirror"
+        echo -e   "${blue}16)${normal} Change to ${cyan}MIT ${normal}Mirror"
+        echo -e "${yellow}21)${normal} Change to ${cyan}Hetzner ${normal}Mirror (ONLY for Hetzner Server)"
+        echo -e "${yellow}22)${normal} Change to ${cyan}Online SAS ${normal}Mirror (ONLY for Online SAS Server)"
+        echo -e "${yellow}23)${normal} Change to ${cyan}OVH ${normal}Mirror"
+        echo -e "${yellow}24)${normal} Change to ${cyan}Leaseweb ${normal}Mirror"
+        echo -e "${yellow}25)${normal} Change to ${cyan}Ikoula ${normal}Mirror"
+        echo -e    "${red}99)${normal} Do NOT change the source list\n"
 
-        echo -ne "${bold}${yellow}Would you like to change your source list?${normal} (Default ${cyan}09${normal}): " ; read -e responce
+        echo -ne "${bold}${yellow}Would you like to change your source list?${normal} (Default ${cyan}99${normal}): " ; read -e responce
 
         case $responce in
-            01 | 1) mirror=us ;;
-            02 | 2) mirror=au ;;
-            03 | 3) mirror=cn ;;
-            04 | 4) mirror=fr ;;
-            05 | 5) mirror=de ;;
-            06 | 6) mirror=jp ;;
-            07 | 7) mirror=ru ;;
-            08 | 8) mirror=uk ;;
-            09 | 9) mirror=no ;;
-            "" | *) mirror=no ;;
+            01 | 1)      mirror=us     ;;
+            02 | 2)      mirror=au     ;;
+            03 | 3)      mirror=cn     ;;
+            04 | 4)      mirror=fr     ;;
+            05 | 5)      mirror=de     ;;
+            06 | 6)      mirror=jp     ;;
+            07 | 7)      mirror=ru     ;;
+            08 | 8)      mirror=uk     ;;
+            11)          mirror=tuna   ;;
+            12)          mirror=ustc   ;;
+            13)          mirror=aliyun ;;
+            14)          mirror=163    ;;
+            15)          mirror=huawei ;;
+            16)          mirror=mit    ;;
+            21)          mirror=hz     ;;
+            22)          mirror=ol     ;;
+            23)          mirror=ovh    ;;
+            24)          mirror=lw     ;;
+            25)          mirror=ik     ;;
+            99 | "" | *) mirror=no     ;;
         esac
     fi
 
-    [[ $mirror == us ]] && mirror_display="United States Source"
-    [[ $mirror == au ]] && mirror_display="Australia Source"
-    [[ $mirror == cn ]] && mirror_display="China Source"
-    [[ $mirror == fr ]] && mirror_display="France Source"
-    [[ $mirror == de ]] && mirror_display="Germeny Source"
-    [[ $mirror == jp ]] && mirror_display="Japan Source"
-    [[ $mirror == ru ]] && mirror_display="Russia Source"
-    [[ $mirror == uk ]] && mirror_display="United Kingdom Source"
+    official_mirror=0
+    case $mirror in
+        us)      mirror_display="United States Mirror"   && official_mirror=1                           ;;
+        au)      mirror_display="Australia Mirror"       && official_mirror=1                           ;;
+        cn)      mirror_display="China Mirror"           && official_mirror=1                           ;;
+        fr)      mirror_display="France Mirror"          && official_mirror=1                           ;;
+        de)      mirror_display="Germeny Mirror"         && official_mirror=1                           ;;
+        jp)      mirror_display="Japan Mirror"           && official_mirror=1                           ;;
+        ru)      mirror_display="Russia Mirror"          && official_mirror=1                           ;;
+        uk)      mirror_display="United Kingdom Mirror"  && official_mirror=1                           ;;
+        tuna)    mirror_display="TUNA Mirror"            && mirror_url="mirrors.tuna.tsinghua.edu.cn"   ;;
+        ustc)    mirror_display="USTC Mirror"            && mirror_url="mirrors.ustc.edu.cn"            ;;
+        aliyun)  mirror_display="Alliyun Mirror"         && mirror_url="mirrors.aliyun.com"             ;;
+        163)     mirror_display="Netease Mirror"         && mirror_url="mirrors.163.com"                ;;
+        huawei)  mirror_display="Huawei Cloud Mirror"    && mirror_url="mirrors.huaweicloud.com"        ;;
+        mit)     mirror_display="MIT Mirror"             && mirror_url="mirrors.mit.edu"                ;;
+        hz)      mirror_display="Hetzner Mirror"         && mirror_url="mirror.hetzner.de"              ;;
+        ol)      mirror_display="Online Mirror"          && mirror_url="mirrors.online.net"             ;;
+        ovh)     mirror_display="OVH Mirror"             && mirror_url="$DISTROL.mirrors.ovh.net"       ;;
+        lw)      mirror_display="Leaseweb Mirror"        && mirror_url="mirror.leaseweb.com"            ;;
+        ik)      mirror_display="Ikoula Mirror"          && mirror_url="mirror.$DISTROL.ikoula.com"     ;;
+    esac
+    [[ $official_mirror == 1 ]] && [[ $DISTRO == Debian ]] && mirror_url="ftp.$mirror.debian.org"
+    [[ $official_mirror == 1 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="$mirror.archive.ubuntu.com"
 
     if [[ $mirror == no ]]; then
         echo -e "\n${baizise}Your apt source list will ${baihongse}not${baizise} be changed${normal}\n"
@@ -98,7 +135,7 @@ function _change_source() {
     if [[ $force_change_source == yes ]]; then
         cat << EOF > /etc/apt/sources.list
 #------------------------------------------------------------------------------#
-#                            OFFICIAL DEBIAN REPOS                             #
+#                       OFFICIAL DEBIAN SNAPSHOT REPOS                         #
 #------------------------------------------------------------------------------#
 
 ###### Debian Update Repos
@@ -112,9 +149,45 @@ deb http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE-backport
 #deb-src http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE-backports main contrib non-free
 EOF
         echo 'Acquire::Check-Valid-Until 0;' > /etc/apt/apt.conf.d/10-no-check-valid-until
-    else
-        wget --no-check-certificate -O /etc/apt/sources.list https://github.com/amefs/quickbox-lite/raw/master/setup/templates/source.list/$DISTROL.template >> "$OutputLOG" 2>&1
-    	sed -i "s/COUNTRY/${mirror}/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
+    elif [[ $DISTRO == Ubuntu ]]; then
+        cat << EOF > /etc/apt/sources.list
+#------------------------------------------------------------------------------#
+#                            OFFICIAL UBUNTU REPOS                             #
+#------------------------------------------------------------------------------#
+
+
+###### Ubuntu Main Repos
+deb http://$mirror_url/ubuntu/ RELEASE main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/ RELEASE main restricted universe multiverse
+
+###### Ubuntu Update Repos
+deb http://$mirror_url/ubuntu/ RELEASE-security main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/ RELEASE-security main restricted universe multiverse
+deb http://$mirror_url/ubuntu/ RELEASE-updates main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/ RELEASE-updates main restricted universe multiverse
+deb http://$mirror_url/ubuntu/ RELEASE-backports main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/ RELEASE-backports main restricted universe multiverse
+
+###### Ubuntu Partner Repo
+deb http://archive.canonical.com/ubuntu RELEASE partner
+deb-src http://archive.canonical.com/ubuntu RELEASE partner
+EOF
+    elif [[ $DISTRO == Debian ]]; then
+        cat << EOF > /etc/apt/sources.list
+#------------------------------------------------------------------------------#
+#                            OFFICIAL DEBIAN REPOS                             #
+#------------------------------------------------------------------------------#
+
+###### Debian Update Repos
+deb http://$mirror_url/debian/ RELEASE main contrib non-free
+#deb-src http://$mirror_url/debian/ RELEASE main contrib non-free
+deb http://security.debian.org/ RELEASE/updates main contrib non-free
+#deb-src http://security.debian.org/ RELEASE/updates main contrib non-free
+deb http://$mirror_url/debian/ RELEASE-updates main contrib non-free
+#deb-src http://$mirror_url/debian/ RELEASE-updates main contrib non-free
+deb http://$mirror_url/debian RELEASE-backports main contrib non-free
+#deb-src http://$mirror_url/debian RELEASE-backports main contrib non-free
+EOF
     fi
     [[ $DISTROL == debian ]] && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117 >> "$OutputLOG" 2>&1 ;
 
@@ -124,12 +197,13 @@ EOF
 
 function _ask_upgrade(){
 
-    ((max_version_gap = 4 - SysSupport))
+#    ((max_version_gap = 4 - SysSupport))
     version_gap=0
 
     if [[ -z $upgrade_version_gap ]]; then
         echo
-        while [[ $version_gap != $max_version_gap ]] ; do
+        while [[ $SysSupport < 4 ]]; do
+#        while [[ $version_gap != $max_version_gap ]] ; do
             ((SysSupport = SysSupport + 1))
             ((version_gap = version_gap + 1))
             _SysSupport_to_DisrtoCodename
@@ -145,33 +219,41 @@ function _ask_upgrade(){
         SysSupport=4
     fi
 
-#    if [[ $upgrade_version_gap < 1 ]]; then
-#        echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
-#    elif [[ $upgrade_version_gap < $max_version_gap ]]; then
-#        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
-#        _SysSupport_to_DisrtoCodename
-#        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
-#        distro_upgrade | tee /etc/distro_upgrade.log
-#    elif [[ $upgrade_version_gap = $max_version_gap ]]; then
-#        echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
-#        distro_upgrade | tee /etc/distro_upgrade.log
-#    else
-#        echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
-#    fi
-
     [ -z "$(echo $upgrade_version_gap | sed -n "/^[0-9]\+$/p")" ] && upgradable=0
     [[ $upgrade_version_gap == 0 ]] && upgradable=0
-    [[ $upgrade_version_gap > $max_version_gap ]] && upgradable=0
+    [[ $upgrade_version_gap > $version_gap ]] && upgradable=0
+#    [[ $upgrade_version_gap > $max_version_gap ]] && upgradable=0
 
     if [[ $upgradable == 0 ]]; then
         echo -e "\n${baizise}Your system will ${baihongse}not${baizise} be upgraded${normal}"
     else
-        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
+#        ((SysSupport = SysSupport - max_version_gap + upgrade_version_gap))
+        ((SysSupport = SysSupport - version_gap + upgrade_version_gap))
         _SysSupport_to_DisrtoCodename
         echo -e "\n${bold}${baiqingse}Your system will be upgraded to ${baizise}${UPGRADE_DISTRO}${baiqingse} after reboot${normal}"
         distro_upgrade | tee /etc/distro_upgrade.log
     fi ;
 }
+
+function _gen_apt_check() {
+
+    status_lock=aptcheck
+    echo "status_lock=$status_lock" > /tmp/Variables
+    rm -f /tmp/$status_lock.1.lock /tmp/$status_lock.2.lock
+    if [[ $ac == 0 ]]; then
+        touch /tmp/$status_lock.1.lock
+    else
+        touch /tmp/$status_lock.2.lock
+    fi
+
+}
+
+function _apt_update() { apt-get -y update >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_dist_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_remove_listchanges() { apt-get remove apt-listchanges --assume-yes --force-yes >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_autoremove() { apt-get -fuy --force-yes autoremove >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_clean() { apt-get --force-yes clean >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 
 function distro_upgrade() {
     starttime=$(date +%s)
@@ -179,7 +261,7 @@ function distro_upgrade() {
     # apt-get -f install
 
     ((SysSupport = SysSupport - upgrade_version_gap))
-    [[ $DISTRO == Debian ]] && [[ $SysSupport == 1 ]] && force_change_source=yes
+    [[ $CODENAME == wheezy ]] && force_change_source=yes
     if [[ $force_change_source == yes ]]; then
         echo -e "${baizise}Your apt source list will be ${baihongse}forced${baizise} to change${normal}\n"
     else
@@ -190,19 +272,20 @@ function distro_upgrade() {
     echo && echo
 
     echo_task "Preparation"
-    apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
-    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+    _apt_update & spinner $!
+    check_status aptcheck
 
     echo_task "Executing APT Upgrade"
-    apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 & spinner $!
-    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+    _apt_upgrade & spinner $!
+    check_status aptcheck
 
     echo_task "Executing APT-Listchanges Remove"
-    apt-get remove apt-listchanges --assume-yes --force-yes >> "$OutputLOG" 2>&1 & spinner $!
-    echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+    _apt_remove_listchanges & spinner $!
+    check_status aptcheck
 
     echo 'libc6 libraries/restart-without-asking boolean true' | debconf-set-selections
 
+    rm -rf /etc/apt/sources.list.d/hetzner-mirror.list >> "$OutputLOG" 2>&1
     if [[ $mirror == no ]]; then
         sed -i "s/$CODENAME/RELEASE/g" /etc/apt/sources.list
     else
@@ -229,16 +312,16 @@ function distro_upgrade() {
         echo_task "Preparation"
         sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
-        apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
-        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+        _apt_update & spinner $!
+        check_status aptcheck
 
         echo_task "Executing APT Upgrade"
-        apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 & spinner $!
-        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+        _apt_upgrade & spinner $!
+        check_status aptcheck
 
         echo_task "Executing APT Dist-Upgrade"
-        apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade >> "$OutputLOG" 2>&1 & spinner $!
-        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+        _apt_dist_upgrade & spinner $!
+        check_status aptcheck
 
         if [[ $force_change_source == yes ]]; then
             echo_task "Change the Source List${normal}"
@@ -256,11 +339,11 @@ function distro_upgrade() {
 
     echo
     echo_task "Executing APT Autoremove"
-    apt-get -fuy --force-yes autoremove >> "$OutputLOG" 2>&1 & spinner $!
+    _apt_autoremove & spinner $!
     echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
 
     echo_task "Executing APT Clean"
-    apt-get --force-yes clean >> "$OutputLOG" 2>&1 & spinner $!
+    _apt_clean & spinner $!
     echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
 
     echo && _time upgradation
@@ -276,10 +359,33 @@ function distro_upgrade() {
     exit 0 ;
 }
 
+function _only_source_mode() {
+
+        _ask_source
+
+        if [[ ! $mirror == no ]]; then
+            echo_task "${baihongse}Change the Source List and Update${normal}"
+            echo && echo
+
+            echo_task "Change the Source List"
+            _change_source & spinner $!
+            echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
+
+            echo_task "Excuting Source Update"
+            sed -i "s/RELEASE/$CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
+            _apt_update & spinner $!
+            check_status aptcheck
+            echo
+        fi
+
+        exit 0
+
+}
+
 function _oscheck() {
     upgradable=0
     if [[ $SysSupport == 4 ]]; then
-        echo -e "\n${green}${bold}Excited! Your operating system is already the latest version.${normal}\n"
+        echo -e "\n${green}${bold}Excited! Your operating system is already the latest version.${normal}\n" && _only_source_mode
     elif [[ $SysSupport != 0 ]]; then
         echo -e "\nYou are now running ${cyan}${bold}$DISTRO $osversion${normal}"
         upgradable=1
@@ -316,27 +422,12 @@ if [[ -n $version ]]; then
     [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
     [[ -z $mirror ]] && mirror=no ;
 else
-    if [[ -n $mirror ]] && [[ $mirror =~  (us|au|cn|fr|de|jp|ru|uk)  ]]; then
-        [[ $DISTRO == Debian ]] && [[ $SysSupport == 1 ]] && force_change_source=yes &&  { echo -e "\n${baihongse}ERROR: No mirror could be used to change${normal}\n" ; exit 1 ; }
-        _ask_source
-
-        echo_task "${baihongse}Change the Source List and Update${normal}"
-        echo && echo
-
-        echo_task "Change the Source List"
-        _change_source & spinner $!
-        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
-
-        echo_task "Excuting Source Update"
-        sed -i "s/RELEASE/$CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
-        apt-get -y update >> "$OutputLOG" 2>&1 & spinner $!
-        echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
-        echo
-
-        exit 0
+    if [[ -n $mirror ]] && [[ $mirror =~  (us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
+        [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\n${baihongse}ERROR: No mirror could be used to change${normal}\n" ; exit 1 ; }
+        _only_source_mode
     fi
 fi
-[[ -n $mirror ]] && [[ ! $mirror =~  (us|au|cn|fr|de|jp|ru|uk|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
+[[ -n $mirror ]] && [[ ! $mirror =~  (us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
 
 ################################################################################################ Main
 
