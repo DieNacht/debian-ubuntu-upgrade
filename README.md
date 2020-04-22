@@ -25,7 +25,11 @@ bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubunt
 bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --mirror Source_Loaction
 ```
 
-Mirror目前支持 `US / AU / CN / FR / DE / JP / RU / UK`
+Mirror目前支持 `官方源 / 教育源 / 国内主机服务商源 / 盒子提供商源`
+官方源包括 `US / AU / CN / FR / DE / JP / RU / UK`
+教育源包括 `TUNA / USTC / MIT`
+国内主机源包括 `Aliyun / Netease(163) / Huawei Cloud`
+盒子源包括 `Online SAS(Only for Online SAS) / Hetzner(Only for Hetzner) / Leaseweb / OVH / Ikoula`
 
 可升级的系统 `Ubuntu 14.04 / 16.04 / 18.04`、`Debian 7 / 8 / 9` 
 
