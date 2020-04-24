@@ -281,7 +281,7 @@ function distro_upgrade() {
     echo_task "${baihongse}Executing Pre-Upgrade Process${normal}"
     echo && echo
 
-    echo_task "Preparation"
+    echo_task "Executing Preparation"
     _apt_update & spinner $!
     check_status aptcheck
 
@@ -320,12 +320,12 @@ function distro_upgrade() {
         echo
 
         if [[ $UPGRADE_CODENAME == focal ]]; then 
-            echo_task "Special Preparation for Focal-Upgrade"
+            echo_task "Executing Special Preparation for Focal-Upgrade"
             _apt_focal & spinner $!
             check_status aptcheck
         fi
         
-        echo_task "Preparation"
+        echo_task "Executing Preparation"
         sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
         _apt_update & spinner $!
@@ -340,7 +340,7 @@ function distro_upgrade() {
         check_status aptcheck
         
         if [[ $UPGRADE_CODENAME == focal ]]; then 
-            echo_task "Executing Special Configuration for Focal-Upgrade"
+            echo_task "Executing Special Configuration for Focal"
             _apt_focal_2 & spinner $!
             check_status aptcheck
         fi
