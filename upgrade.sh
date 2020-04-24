@@ -15,7 +15,7 @@ while [ -n "$1" ] ; do case "$1" in
     -v | --version  ) version="$2"  ; shift 2 ;;
     -m | --mirror   ) mirror="$2"   ; shift 2 ;;
     -l | --logbase  ) LogTimes="$2" ; shift 2 ;;
-    --no-mirror-change   ) [ -z $mirror ] && mirror=no || { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; } ; shift 2 ;;
+    --no-mirror-change   ) [ -n $mirror ] && { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; } || mirror=no ; shift 2 ;;
     --only-mirror-change ) [ -z $version ] && only_mirror=1 || { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; } ; shift 2 ;;
     --    ) shift ; break ;;
 esac ; done
