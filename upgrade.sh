@@ -216,6 +216,7 @@ function _ask_upgrade(){
         ((version_gap = version_gap - 1))
         upgrade_version_gap=${responce:0-1:1}
     else
+        ((version_gap = 4 - SysSupport))
         SysSupport=4
     fi
 
@@ -416,7 +417,6 @@ if [[ -n $version ]]; then
     [[ $version  ==  jessie  ]] && count=2
 
     ((upgrade_version_gap = count - SysSupport))
-    ((version_gap = 4 - SysSupport))
 
     [[ ! $upgrade_version_gap > 0 ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
     [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
