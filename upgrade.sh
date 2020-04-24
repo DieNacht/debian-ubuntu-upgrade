@@ -321,7 +321,7 @@ function distro_upgrade() {
 
         if [[ $UPGRADE_CODENAME == focal ]]; then 
             echo_task "Special Preparation for Focal-Upgrade"
-            _apt_bionic & spinner $!
+            _apt_focal & spinner $!
             check_status aptcheck
         fi
         
@@ -341,7 +341,7 @@ function distro_upgrade() {
         
         if [[ $UPGRADE_CODENAME == focal ]]; then 
             echo_task "Executing Special Configuration for Focal-Upgrade"
-            _apt_bionic_2 & spinner $!
+            _apt_focal_2 & spinner $!
             check_status aptcheck
         fi
         
