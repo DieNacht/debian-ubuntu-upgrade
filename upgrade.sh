@@ -8,13 +8,15 @@
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
-OPTS=$(getopt -a -o v:m:l: --long version:,mirror:,logbase: -- "$@")
+OPTS=$(getopt -a -o v:m:l:,u,c --long version:,mirror:,logbase:,upgrade,chmirror -- "$@")
 eval set -- "$OPTS"
 
 while [ -n "$1" ] ; do case "$1" in
     -v | --version    ) version="$2"  ; shift 2 ;;
     -m | --mirror     ) mirror="$2"   ; shift 2 ;;
     -l | --logbase    ) LogTimes="$2" ; shift 2 ;;
+    -u | --upgrade    ) [ -z $version ] && mode=upgrade || { echo -e "\nERROR: You already choose to uprade to $version\n" ; exit 1 ; }  ; shift 2 ;;
+    -c | --chmirror   ) mirror=no ; shift 2 ;;
     --    ) shift ; break ;;
 esac ; done
 
@@ -390,8 +392,10 @@ function _only_source_mode() {
 
 function _oscheck() {
     upgradable=0
-    if [[ $SysSupport == 4 ]]; then
+    if [[ $SysSupport == 4 ]] ; then
         echo -e "\n${green}${bold}Excited! Your operating system is already the latest version.${normal}\n" && _only_source_mode
+    elif [[ $mode == chmirror ]] ; then
+        _only_source_mode
     elif [[ $SysSupport != 0 ]]; then
         echo -e "\nYou are now running ${cyan}${bold}$DISTRO $osversion${normal}"
         upgradable=1
@@ -423,17 +427,18 @@ if [[ -n $version ]]; then
 
     ((upgrade_version_gap = count - SysSupport))
 
-    [[ ! $upgrade_version_gap > 0 ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
-    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
-    [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
+    [[ $upgrade_version_gap == 0 ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
+    [[ ${upgrade_version_gap:0:1} == "-" ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
+    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\nERROR: It's impossible to upgrade to $version$\n" ; exit 1 ; }
+    [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\nERROR: It's impossible to upgrade to $version$\n" ; exit 1 ; }
     [[ -z $mirror ]] && mirror=no ;
 else
     if [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
-        [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\n${baihongse}ERROR: No mirror could be used to change${normal}\n" ; exit 1 ; }
+        [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\nERROR: No mirror could be used to change\n" ; exit 1 ; }
         _only_source_mode
     fi
 fi
-[[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
+[[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik|no)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
 
 ################################################################################################ Main
 
