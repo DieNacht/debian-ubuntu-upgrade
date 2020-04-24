@@ -442,7 +442,7 @@ else
         _only_source_mode
     fi
 fi
-[[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik|no)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
+[[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
 
 ################################################################################################ Main
 
