@@ -15,8 +15,8 @@ while [ -n "$1" ] ; do case "$1" in
     -v | --version  ) version="$2"  ; shift 2 ;;
     -m | --mirror   ) mirror="$2"   ; shift 2 ;;
     -l | --logbase  ) LogTimes="$2" ; shift 2 ;;
-    --no-mirror-change   ) [ -z $mirror ] && mirror=no || { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; } ; shift ;;
-    --only-mirror-change ) [ -z $version ] && only_mirror=1 || { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; } ; shift ;;
+    --no-mirror-change   ) only_upgrade=1 ; shift ;;
+    --only-mirror-change ) only_mirror=1  ; shift ;;
     --    ) shift ; break ;;
 esac ; done
 
@@ -405,6 +405,10 @@ function _oscheck() {
 }
 
 ################################################################################################ Set Variables 2
+
+[[ $only_upgrade == 1 ]] && [[ $mirror != no ]] && [ -n $mirror ] && { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; }
+[[ $only_upgrade == 1 ]] && [ -z $mirror ] && mirror=no
+[[ $only_mirror == 1 ]] && { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; }
 
 SysSupport=0
 [[ $CODENAME  ==  focal   ]] && SysSupport=4
