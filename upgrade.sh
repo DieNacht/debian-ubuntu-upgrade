@@ -48,77 +48,82 @@ function _ask_source(){
 
     if [[ -z $mirror ]]; then
         echo
-        echo -e  "${green}01)${normal} Change to ${cyan}United States ${normal}Mirror"
-        echo -e  "${green}02)${normal} Change to ${cyan}Australia ${normal}Mirror"
-        echo -e  "${green}03)${normal} Change to ${cyan}China ${normal}Mirror"
-        echo -e  "${green}04)${normal} Change to ${cyan}France ${normal}Mirror"
-        echo -e  "${green}05)${normal} Change to ${cyan}Germeny ${normal}Mirror"
-        echo -e  "${green}06)${normal} Change to ${cyan}Japan ${normal}Mirror"
-        echo -e  "${green}07)${normal} Change to ${cyan}Russia ${normal}Mirror"
-        echo -e  "${green}08)${normal} Change to ${cyan}United Kingdom ${normal}Mirror"
+        echo -e  "${white}00)${normal} Change to ${cyan}Official ${normal}Mirror"        
+        echo -e  "${white}01)${normal} Change to ${cyan}United States ${normal}Mirror"
+        echo -e  "${white}02)${normal} Change to ${cyan}Australia ${normal}Mirror"
+        echo -e  "${white}03)${normal} Change to ${cyan}China ${normal}Mirror"
+        echo -e  "${white}04)${normal} Change to ${cyan}France ${normal}Mirror"
+        echo -e  "${white}05)${normal} Change to ${cyan}Germeny ${normal}Mirror"
+        echo -e  "${white}06)${normal} Change to ${cyan}Japan ${normal}Mirror"
+        echo -e  "${white}07)${normal} Change to ${cyan}Russia ${normal}Mirror"
+        echo -e  "${white}08)${normal} Change to ${cyan}United Kingdom ${normal}Mirror"
         echo -e   "${blue}11)${normal} Change to ${cyan}TUNA ${normal}Mirror"
         echo -e   "${blue}12)${normal} Change to ${cyan}USTC ${normal}Mirror"
-        echo -e   "${blue}13)${normal} Change to ${cyan}Aliyun ${normal}Mirror"
-        echo -e   "${blue}14)${normal} Change to ${cyan}Netease(163) ${normal}Mirror"
-        echo -e   "${blue}15)${normal} Change to ${cyan}Huawei Cloud ${normal}Mirror"
-        echo -e   "${blue}16)${normal} Change to ${cyan}MIT ${normal}Mirror"
-        echo -e "${yellow}21)${normal} Change to ${cyan}Hetzner ${normal}Mirror (ONLY for Hetzner Server)"
-        echo -e "${yellow}22)${normal} Change to ${cyan}Online SAS ${normal}Mirror (ONLY for Online SAS Server)"
-        echo -e "${yellow}23)${normal} Change to ${cyan}OVH ${normal}Mirror"
-        echo -e "${yellow}24)${normal} Change to ${cyan}Leaseweb ${normal}Mirror"
-        echo -e "${yellow}25)${normal} Change to ${cyan}Ikoula ${normal}Mirror"
+        echo -e   "${blue}13)${normal} Change to ${cyan}MIT ${normal}Mirror"
+        echo -e  "${green}21)${normal} Change to ${cyan}Netease(163) ${normal}Mirror"
+        echo -e  "${green}22)${normal} Change to ${cyan}Huawei Cloud ${normal}Mirror"
+        echo -e  "${green}23)${normal} Change to ${cyan}Aliyun ${normal}Mirror"
+        echo -e "${yellow}31)${normal} Change to ${cyan}Hetzner ${normal}Mirror (ONLY for Hetzner Server)"
+        echo -e "${yellow}32)${normal} Change to ${cyan}Online SAS ${normal}Mirror (ONLY for Online SAS Server)"
+        echo -e "${yellow}33)${normal} Change to ${cyan}OVH ${normal}Mirror"
+        echo -e "${yellow}34)${normal} Change to ${cyan}Leaseweb ${normal}Mirror"
+        echo -e "${yellow}35)${normal} Change to ${cyan}Ikoula ${normal}Mirror"
         echo -e    "${red}99)${normal} Do NOT change the source list\n"
 
         echo -ne "${bold}${yellow}Would you like to change your source list?${normal} (Default ${cyan}99${normal}): " ; read -e responce
 
         case $responce in
-            01 | 1)      mirror=us     ;;
-            02 | 2)      mirror=au     ;;
-            03 | 3)      mirror=cn     ;;
-            04 | 4)      mirror=fr     ;;
-            05 | 5)      mirror=de     ;;
-            06 | 6)      mirror=jp     ;;
-            07 | 7)      mirror=ru     ;;
-            08 | 8)      mirror=uk     ;;
-            11)          mirror=tuna   ;;
-            12)          mirror=ustc   ;;
-            13)          mirror=aliyun ;;
-            14)          mirror=163    ;;
-            15)          mirror=huawei ;;
-            16)          mirror=mit    ;;
-            21)          mirror=hz     ;;
-            22)          mirror=ol     ;;
-            23)          mirror=ovh    ;;
-            24)          mirror=lw     ;;
-            25)          mirror=ik     ;;
-            99 | "" | *) mirror=no     ;;
+            00 | 0)      mirror=official ;;
+            01 | 1)      mirror=us       ;;
+            02 | 2)      mirror=au       ;;
+            03 | 3)      mirror=cn       ;;
+            04 | 4)      mirror=fr       ;;
+            05 | 5)      mirror=de       ;;
+            06 | 6)      mirror=jp       ;;
+            07 | 7)      mirror=ru       ;;
+            08 | 8)      mirror=uk       ;;
+            11)          mirror=tuna     ;;
+            12)          mirror=ustc     ;;
+            13)          mirror=mit      ;;
+            21)          mirror=163      ;;
+            22)          mirror=huawei   ;;
+            23)          mirror=aliyun   ;;
+            31)          mirror=hz       ;;
+            32)          mirror=ol       ;;
+            33)          mirror=ovh      ;;
+            34)          mirror=lw       ;;
+            35)          mirror=ik       ;;
+            99 | "" | *) mirror=no       ;;
         esac
     fi
 
     official_mirror=0
     case $mirror in
-        us)      mirror_display="United States Mirror"   && official_mirror=1                           ;;
-        au)      mirror_display="Australia Mirror"       && official_mirror=1                           ;;
-        cn)      mirror_display="China Mirror"           && official_mirror=1                           ;;
-        fr)      mirror_display="France Mirror"          && official_mirror=1                           ;;
-        de)      mirror_display="Germeny Mirror"         && official_mirror=1                           ;;
-        jp)      mirror_display="Japan Mirror"           && official_mirror=1                           ;;
-        ru)      mirror_display="Russia Mirror"          && official_mirror=1                           ;;
-        uk)      mirror_display="United Kingdom Mirror"  && official_mirror=1                           ;;
-        tuna)    mirror_display="TUNA Mirror"            && mirror_url="mirrors.tuna.tsinghua.edu.cn"   ;;
-        ustc)    mirror_display="USTC Mirror"            && mirror_url="mirrors.ustc.edu.cn"            ;;
-        aliyun)  mirror_display="Alliyun Mirror"         && mirror_url="mirrors.aliyun.com"             ;;
-        163)     mirror_display="Netease Mirror"         && mirror_url="mirrors.163.com"                ;;
-        huawei)  mirror_display="Huawei Cloud Mirror"    && mirror_url="mirrors.huaweicloud.com"        ;;
-        mit)     mirror_display="MIT Mirror"             && mirror_url="mirrors.mit.edu"                ;;
-        hz)      mirror_display="Hetzner Mirror"         && mirror_url="mirror.hetzner.de"              ;;
-        ol)      mirror_display="Online Mirror"          && mirror_url="mirrors.online.net"             ;;
-        ovh)     mirror_display="OVH Mirror"             && mirror_url="$DISTROL.mirrors.ovh.net"       ;;
-        lw)      mirror_display="Leaseweb Mirror"        && mirror_url="mirror.leaseweb.com"            ;;
-        ik)      mirror_display="Ikoula Mirror"          && mirror_url="mirror.$DISTROL.ikoula.com"     ;;
+        official) mirror_display="Official Mirror"        && official_mirror=1                           ;;
+        us)       mirror_display="United States Mirror"   && official_mirror=2                           ;;
+        au)       mirror_display="Australia Mirror"       && official_mirror=2                           ;;
+        cn)       mirror_display="China Mirror"           && official_mirror=2                           ;;
+        fr)       mirror_display="France Mirror"          && official_mirror=2                           ;;
+        de)       mirror_display="Germeny Mirror"         && official_mirror=2                           ;;
+        jp)       mirror_display="Japan Mirror"           && official_mirror=2                           ;;
+        ru)       mirror_display="Russia Mirror"          && official_mirror=2                           ;;
+        uk)       mirror_display="United Kingdom Mirror"  && official_mirror=2                           ;;
+        tuna)     mirror_display="TUNA Mirror"            && mirror_url="mirrors.tuna.tsinghua.edu.cn"   ;;
+        ustc)     mirror_display="USTC Mirror"            && mirror_url="mirrors.ustc.edu.cn"            ;;
+        aliyun)   mirror_display="Alliyun Mirror"         && mirror_url="mirrors.aliyun.com"             ;;
+        163)      mirror_display="Netease Mirror"         && mirror_url="mirrors.163.com"                ;;
+        huawei)   mirror_display="Huawei Cloud Mirror"    && mirror_url="mirrors.huaweicloud.com"        ;;
+        mit)      mirror_display="MIT Mirror"             && mirror_url="mirrors.mit.edu"                ;;
+        hz)       mirror_display="Hetzner Mirror"         && mirror_url="mirror.hetzner.de"              ;;
+        ol)       mirror_display="Online Mirror"          && mirror_url="mirrors.online.net"             ;;
+        ovh)      mirror_display="OVH Mirror"             && mirror_url="$DISTROL.mirrors.ovh.net"       ;;
+        lw)       mirror_display="Leaseweb Mirror"        && mirror_url="mirror.leaseweb.com"            ;;
+        ik)       mirror_display="Ikoula Mirror"          && mirror_url="mirror.$DISTROL.ikoula.com"     ;;
     esac
-    [[ $official_mirror == 1 ]] && [[ $DISTRO == Debian ]] && mirror_url="ftp.$mirror.debian.org"
-    [[ $official_mirror == 1 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="$mirror.archive.ubuntu.com"
+    [[ $official_mirror == 1 ]] && [[ $DISTRO == Debian ]] && mirror_url="ftp.debian.org"
+    [[ $official_mirror == 1 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="archive.ubuntu.com"   
+    [[ $official_mirror == 2 ]] && [[ $DISTRO == Debian ]] && mirror_url="ftp.$mirror.debian.org"
+    [[ $official_mirror == 2 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="$mirror.archive.ubuntu.com"
 
     if [[ $mirror == no ]]; then
         echo -e "\n${baizise}Your apt source list will ${baihongse}not${baizise} be changed${normal}\n"
@@ -423,12 +428,12 @@ if [[ -n $version ]]; then
     [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
     [[ -z $mirror ]] && mirror=no ;
 else
-    if [[ -n $mirror ]] && [[ $mirror =~  (us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
+    if [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
         [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\n${baihongse}ERROR: No mirror could be used to change${normal}\n" ; exit 1 ; }
         _only_source_mode
     fi
 fi
-[[ -n $mirror ]] && [[ ! $mirror =~  (us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
+[[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik|no)  ]] && { echo -e "\n${baihongse}ERROR: No such mirror${normal}\n" ; exit 1 ; }
 
 ################################################################################################ Main
 
