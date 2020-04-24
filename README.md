@@ -13,6 +13,18 @@
 bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh)
 ```
 
+## Interactive Upgrade Mode Without Source Change
+
+```
+bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --no-mirror-change
+```
+
+## Interactive Change Source Mode
+
+```
+bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --only-mirror-change
+```
+
 ## Non-Interactive Upgrade Mode
 
 ```
