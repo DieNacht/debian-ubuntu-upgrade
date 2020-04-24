@@ -1,4 +1,4 @@
-# Debian/Ubuntu-Upgrade
+# Debian/Ubuntu-OS Upgrade
 > Inspired by inexistence: https://github.com/Aniverse/inexistence
 
 > ALSO Inspired by quickbox-lite: https://github.com/amefs/quickbox-lite
