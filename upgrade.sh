@@ -257,7 +257,9 @@ function _gen_apt_check() {
 }
 
 function _apt_update() { apt-get -y update >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_focal() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy purge cryptsetup >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_focal_2() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy install cryptsetup >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_dist_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_remove_listchanges() { apt-get remove apt-listchanges --assume-yes --force-yes >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_autoremove() { apt-get -fuy --force-yes autoremove >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
@@ -317,6 +319,12 @@ function distro_upgrade() {
         echo_task "Upgrade to ${cyan}${bold}${UPGRADE_DISTRO}${normal}"
         echo
 
+        if [[ $UPGRADE_CODENAME == focal ]]; then 
+            echo_task "Special Preparation for Focal-Upgrade"
+            _apt_bionic & spinner $!
+            check_status aptcheck
+        fi
+        
         echo_task "Preparation"
         sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
@@ -330,7 +338,13 @@ function distro_upgrade() {
         echo_task "Executing APT Dist-Upgrade"
         _apt_dist_upgrade & spinner $!
         check_status aptcheck
-
+        
+        if [[ $UPGRADE_CODENAME == focal ]]; then 
+            echo_task "Executing Special Configuration for Focal-Upgrade"
+            _apt_bionic_2 & spinner $!
+            check_status aptcheck
+        fi
+        
         if [[ $force_change_source == yes ]]; then
             echo_task "Change the Source List${normal}"
             mirror=de && force_change_source=no
