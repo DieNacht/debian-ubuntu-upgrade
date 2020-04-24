@@ -8,15 +8,15 @@
 export DEBIAN_FRONTEND=noninteractive
 export APT_LISTCHANGES_FRONTEND=none
 
-OPTS=$(getopt -a -o v:m:l:,u,c --long version:,mirror:,logbase:,upgrade,chmirror -- "$@")
+OPTS=$(getopt -a -o v:m:l:,u,c --long "version:,mirror:,logbase:,upgrade,only-mirror-change,no-mirror-change" -- "$@")
 eval set -- "$OPTS"
 
 while [ -n "$1" ] ; do case "$1" in
-    -v | --version    ) version="$2"  ; shift 2 ;;
-    -m | --mirror     ) mirror="$2"   ; shift 2 ;;
-    -l | --logbase    ) LogTimes="$2" ; shift 2 ;;
-    -u | --upgrade    ) [ -z $version ] && mode=upgrade || { echo -e "\nERROR: You already choose to uprade to $version\n" ; exit 1 ; }  ; shift 2 ;;
-    -c | --chmirror   ) mirror=no ; shift 2 ;;
+    -v | --version  ) version="$2"  ; shift 2 ;;
+    -m | --mirror   ) mirror="$2"   ; shift 2 ;;
+    -l | --logbase  ) LogTimes="$2" ; shift 2 ;;
+    --no-mirror-change   ) [ -z $mirror ] && mirror=no || { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; } ; shift 2 ;;
+    --only-mirror-change ) [ -z $version ] && only_mirror=1 || { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; } ; shift 2 ;;
     --    ) shift ; break ;;
 esac ; done
 
@@ -48,7 +48,7 @@ function _SysSupport_to_DisrtoCodename (){
 
 function _ask_source(){
 
-    if [[ -z $mirror ]]; then
+    if [[ -z $mirror ]] ; then
         echo
         echo -e  "${white}00)${normal} Change to ${cyan}Official ${normal}Mirror"        
         echo -e  "${white}01)${normal} Change to ${cyan}United States ${normal}Mirror"
@@ -394,7 +394,7 @@ function _oscheck() {
     upgradable=0
     if [[ $SysSupport == 4 ]] ; then
         echo -e "\n${green}${bold}Excited! Your operating system is already the latest version.${normal}\n" && _only_source_mode
-    elif [[ $mode == chmirror ]] ; then
+    elif [[ $only_mirror == 1 ]] ; then
         _only_source_mode
     elif [[ $SysSupport != 0 ]]; then
         echo -e "\nYou are now running ${cyan}${bold}$DISTRO $osversion${normal}"
