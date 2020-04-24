@@ -416,6 +416,7 @@ if [[ -n $version ]]; then
     [[ $version  ==  jessie  ]] && count=2
 
     ((upgrade_version_gap = count - SysSupport))
+    ((version_gap = 4 - SysSupport))
 
     [[ ! $upgrade_version_gap > 0 ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
     [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\n${baihongse}ERROR: Can't uprade to $version${normal}\n" ; exit 1 ; }
