@@ -449,15 +449,12 @@ if [[ -n $version ]]; then
     [[ ${upgrade_version_gap:0:1} == "-" ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
     [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\nERROR: It's impossible to upgrade to $version$\n" ; exit 1 ; }
     [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\nERROR: It's impossible to upgrade to $version$\n" ; exit 1 ; }
-    [[ -z $mirror ]] && mirror=no ;
-else
-    if [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
+elif [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
         [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\nERROR: No mirror could be used to change\n" ; exit 1 ; }
         _only_source_mode
-    fi
 fi
 [[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
-
+[[ -z $mirror ]] && mirror=no
 ################################################################################################ Main
 
 [[ $EUID != 0 ]] && { echo -e "\n${bold}${red}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n" ; exit 1 ; }
