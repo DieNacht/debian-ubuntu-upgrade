@@ -257,9 +257,8 @@ function _gen_apt_check() {
 }
 
 function _apt_update() { apt-get -y update >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
-function _apt_focal() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy purge cryptsetup >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
-function _apt_focal_2() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy install cryptsetup >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
+function _apt_full_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy full-upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_dist_upgrade() { apt-get --force-yes -o Dpkg::Options::="--force-confnew" --force-yes -o Dpkg::Options::="--force-confdef" -fuy dist-upgrade >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_remove_listchanges() { apt-get remove apt-listchanges --assume-yes --force-yes >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
 function _apt_autoremove() { apt-get -fuy --force-yes autoremove >> "$OutputLOG" 2>&1 ; ac=$? ; _gen_apt_check ; }
@@ -319,32 +318,26 @@ function distro_upgrade() {
         echo_task "Upgrade to ${cyan}${bold}${UPGRADE_DISTRO}${normal}"
         echo
 
-        if [[ $UPGRADE_CODENAME == focal ]]; then 
-            echo_task "Executing Special Preparation for Focal-Upgrade"
-            _apt_focal & spinner $!
-            check_status aptcheck
-        fi
-        
         echo_task "Executing Preparation"
         sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
         _apt_update & spinner $!
         check_status aptcheck
 
-        echo_task "Executing APT Upgrade"
-        _apt_upgrade & spinner $!
-        check_status aptcheck
+        if [[ $UPGRADE_CODENAME =~ (buster|bionic|focal) ]]; then
+            echo_task "Executing APT Full-Upgrade"
+            _apt_full_upgrade & spinner $!
+            check_status aptcheck
+        else
+            echo_task "Executing APT Upgrade"
+            _apt_upgrade & spinner $!
+            check_status aptcheck
 
-        echo_task "Executing APT Dist-Upgrade"
-        _apt_dist_upgrade & spinner $!
-        check_status aptcheck
-        
-        if [[ $UPGRADE_CODENAME == focal ]]; then 
-            echo_task "Executing Special Configuration for Focal"
-            _apt_focal_2 & spinner $!
+            echo_task "Executing APT Dist-Upgrade"
+            _apt_dist_upgrade & spinner $!
             check_status aptcheck
         fi
-        
+
         if [[ $force_change_source == yes ]]; then
             echo_task "Change the Source List${normal}"
             mirror=de && force_change_source=no
@@ -450,11 +443,12 @@ if [[ -n $version ]]; then
     [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\nERROR: It's impossible to upgrade to $version$\n" ; exit 1 ; }
     [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\nERROR: It's impossible to upgrade to $version$\n" ; exit 1 ; }
 elif [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
-        [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\nERROR: No mirror could be used to change\n" ; exit 1 ; }
-        _only_source_mode
+    [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\nERROR: No mirror could be used to change\n" ; exit 1 ; }
+    _only_source_mode
 fi
 [[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
 [[ -z $mirror ]] && mirror=no
+
 ################################################################################################ Main
 
 [[ $EUID != 0 ]] && { echo -e "\n${bold}${red}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n" ; exit 1 ; }
