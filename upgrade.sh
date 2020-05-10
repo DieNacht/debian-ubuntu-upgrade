@@ -126,6 +126,8 @@ function _ask_source(){
     [[ $official_mirror == 1 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="archive.ubuntu.com"   
     [[ $official_mirror == 2 ]] && [[ $DISTRO == Debian ]] && mirror_url="ftp.$mirror.debian.org"
     [[ $official_mirror == 2 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="$mirror.archive.ubuntu.com"
+    hz_specila_url=""
+    [[ $mirror == hz ]] && hz_specila_url='packages'
 
     if [[ $mirror == no ]]; then
         echo -e "\n${baizise}Your apt source list will ${baihongse}not${baizise} be changed${normal}\n"
@@ -164,21 +166,22 @@ EOF
 
 
 ###### Ubuntu Main Repos
-deb http://$mirror_url/ubuntu/ RELEASE main restricted universe multiverse
-deb-src http://$mirror_url/ubuntu/ RELEASE main restricted universe multiverse
+deb http://$mirror_url/ubuntu/$hz_specila_url RELEASE main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/$hz_specila_url RELEASE main restricted universe multiverse
 
 ###### Ubuntu Update Repos
-deb http://$mirror_url/ubuntu/ RELEASE-security main restricted universe multiverse
-deb-src http://$mirror_url/ubuntu/ RELEASE-security main restricted universe multiverse
-deb http://$mirror_url/ubuntu/ RELEASE-updates main restricted universe multiverse
-deb-src http://$mirror_url/ubuntu/ RELEASE-updates main restricted universe multiverse
-deb http://$mirror_url/ubuntu/ RELEASE-backports main restricted universe multiverse
-deb-src http://$mirror_url/ubuntu/ RELEASE-backports main restricted universe multiverse
+deb http://$mirror_url/ubuntu/$hz_specila_url RELEASE-security main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/$hz_specila_url RELEASE-security main restricted universe multiverse
+deb http://$mirror_url/ubuntu/$hz_specila_url RELEASE-updates main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/$hz_specila_url RELEASE-updates main restricted universe multiverse
+deb http://$mirror_url/ubuntu/$hz_specila_url RELEASE-backports main restricted universe multiverse
+deb-src http://$mirror_url/ubuntu/$hz_specila_url RELEASE-backports main restricted universe multiverse
 
 ###### Ubuntu Partner Repo
 deb http://archive.canonical.com/ubuntu RELEASE partner
 deb-src http://archive.canonical.com/ubuntu RELEASE partner
 EOF
+        [[ $mirror == hz ]] && sed -i "s/deb-src/#deb-arc/g" /etc/apt/sources.list
     elif [[ $DISTRO == Debian ]]; then
         cat << EOF > /etc/apt/sources.list
 #------------------------------------------------------------------------------#
@@ -186,14 +189,14 @@ EOF
 #------------------------------------------------------------------------------#
 
 ###### Debian Update Repos
-deb http://$mirror_url/debian/ RELEASE main contrib non-free
+deb http://$mirror_url/debian/$hz_specila_url RELEASE main contrib non-free
 #deb-src http://$mirror_url/debian/ RELEASE main contrib non-free
 deb http://security.debian.org/ RELEASE/updates main contrib non-free
 #deb-src http://security.debian.org/ RELEASE/updates main contrib non-free
-deb http://$mirror_url/debian/ RELEASE-updates main contrib non-free
+deb http://$mirror_url/debian/$hz_specila_url RELEASE-updates main contrib non-free
 #deb-src http://$mirror_url/debian/ RELEASE-updates main contrib non-free
-deb http://$mirror_url/debian RELEASE-backports main contrib non-free
-#deb-src http://$mirror_url/debian RELEASE-backports main contrib non-free
+deb http://$mirror_url/debian/$hz_specila_url RELEASE-backports main contrib non-free
+#deb-src http://$mirror_url/debian/$hz_specila_url RELEASE-backports main contrib non-free
 EOF
     fi
     [[ $DISTROL == debian ]] && apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 5C808C2B65558117 >> "$OutputLOG" 2>&1 ;
