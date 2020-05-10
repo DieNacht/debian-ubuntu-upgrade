@@ -414,7 +414,7 @@ function _oscheck() {
 ################################################################################################ Set Variables 2
 
 [[ $only_upgrade == 1 ]] && [[ $mirror != no ]] && [[ $mirror != "" ]] && { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; }
-[[ $only_upgrade == 1 ]] && [ -z $mirror ] && mirror=no
+[[ $only_upgrade == 1 ]] && [[ -z $mirror ]] && mirror=no
 [[ $only_mirror == 1 ]] && { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; }
 
 SysSupport=0
@@ -446,7 +446,7 @@ elif [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|u
     [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\nERROR: No mirror could be used to change\n" ; exit 1 ; }
     _only_source_mode
 fi
-[[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
+[[ $only_upgrade != 1 ]] && [[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
 [[ -n $version ]] && [[ -z $mirror ]] && mirror=no
 
 ################################################################################################ Main
