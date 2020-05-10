@@ -415,7 +415,7 @@ function _oscheck() {
 
 [[ $only_upgrade == 1 ]] && [[ $mirror != no ]] && [[ $mirror != "" ]] && { echo -e "\nERROR: You already choose to change mirror\n" ; exit 1 ; }
 [[ $only_upgrade == 1 ]] && [[ -z $mirror ]] && mirror=no
-[[ $only_mirror == 1 ]] && { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; }
+[[ $only_mirror == 1 ]] && [[ -n $version ]] && { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; }
 
 SysSupport=0
 [[ $CODENAME  ==  focal   ]] && SysSupport=4
