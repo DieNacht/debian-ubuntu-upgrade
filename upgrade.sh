@@ -447,7 +447,7 @@ elif [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|u
     _only_source_mode
 fi
 [[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
-[[ -z $mirror ]] && mirror=no
+[[ -n $version ]] && [[ -z $mirror ]] && mirror=no
 
 ################################################################################################ Main
 
