@@ -457,4 +457,3 @@ fi
 [[ $EUID != 0 ]] && { echo -e "\n${bold}${red}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n" ; exit 1 ; }
 _oscheck
 [[ $upgradable == 1 ]] && _ask_upgrade
-
