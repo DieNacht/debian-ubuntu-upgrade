@@ -39,9 +39,9 @@ function _SysSupport_to_DisrtoCodename (){
     [[ $SysSupport == 4  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 20.04" ; UPGRADE_CODENAME=focal   ; }
     [[ $SysSupport == 3  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic  ; }
     [[ $SysSupport == 2  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 16.04" ; UPGRADE_CODENAME=xenial  ; }
-    [[ $SysSupport == 4  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 10"    ; UPGRADE_CODENAME=buster  ; }
-    [[ $SysSupport == 3  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 9"     ; UPGRADE_CODENAME=stretch ; }
-    [[ $SysSupport == 2  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 8"     ; UPGRADE_CODENAME=jessie  ; } ;
+    [[ $SysSupport == 4  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 11"    ; UPGRADE_CODENAME=bullseye; }
+    [[ $SysSupport == 3  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 10"    ; UPGRADE_CODENAME=buster  ; }
+    [[ $SysSupport == 2  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 9"     ; UPGRADE_CODENAME=stretch ; }
 }
 
 ################################################################################################ APT-Source-Ralated Functions
@@ -128,6 +128,9 @@ function _ask_source(){
     [[ $official_mirror == 2 ]] && [[ $DISTRO == Ubuntu ]] && mirror_url="$mirror.archive.ubuntu.com"
     hz_specila_url=""
     [[ $mirror == hz ]] && hz_specila_url='packages'
+    bullseye_security_url=""
+    bullseye_security='/updates'
+    [[ $CODENAME == bullseye ]] && bullseye_security_url='debian-security' && bullseye_security='-security'
 
     if [[ $mirror == no ]]; then
         echo -e "\n${baizise}Your apt source list will ${baihongse}not${baizise} be changed${normal}\n"
@@ -141,24 +144,7 @@ function _change_source() {
 
     cp /etc/apt/sources.list /etc/apt/sources.list."$(date "+%Y.%m.%d.%H.%M.%S")".bak >> "$OutputLOG" 2>&1
     rm -rf /etc/apt/sources.list.d/hetzner-mirror.list >> "$OutputLOG" 2>&1
-    if [[ $force_change_source == yes ]]; then
-        cat << EOF > /etc/apt/sources.list
-#------------------------------------------------------------------------------#
-#                       OFFICIAL DEBIAN SNAPSHOT REPOS                         #
-#------------------------------------------------------------------------------#
-
-###### Debian Update Repos
-deb http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE main contrib non-free
-#deb-src http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE main contrib non-free
-deb http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE/updates main contrib non-free
-#deb-src http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE/updates main contrib non-free
-deb http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE-updates main contrib non-free
-#deb-src http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE-updates main contrib non-free
-deb http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE-backports main contrib non-free
-#deb-src http://snapshot.debian.org/archive/debian/20190321T212815Z/ RELEASE-backports main contrib non-free
-EOF
-        echo 'Acquire::Check-Valid-Until 0;' > /etc/apt/apt.conf.d/10-no-check-valid-until
-    elif [[ $DISTRO == Ubuntu ]]; then
+    if [[ $DISTRO == Ubuntu ]]; then
         cat << EOF > /etc/apt/sources.list
 #------------------------------------------------------------------------------#
 #                            OFFICIAL UBUNTU REPOS                             #
@@ -191,7 +177,7 @@ EOF
 ###### Debian Update Repos
 deb http://$mirror_url/debian/$hz_specila_url RELEASE main contrib non-free
 #deb-src http://$mirror_url/debian/ RELEASE main contrib non-free
-deb http://security.debian.org/ RELEASE/updates main contrib non-free
+deb http://security.debian.org/$bullseye_security_url RELEASE$bullseye_security main contrib non-free
 #deb-src http://security.debian.org/ RELEASE/updates main contrib non-free
 deb http://$mirror_url/debian/$hz_specila_url RELEASE-updates main contrib non-free
 #deb-src http://$mirror_url/debian/ RELEASE-updates main contrib non-free
@@ -273,12 +259,7 @@ function distro_upgrade() {
     # apt-get -f install
 
     ((SysSupport = SysSupport - upgrade_version_gap))
-    [[ $CODENAME == wheezy ]] && force_change_source=yes
-    if [[ $force_change_source == yes ]]; then
-        echo -e "${baizise}Your apt source list will be ${baihongse}forced${baizise} to change${normal}\n"
-    else
-        _ask_source
-    fi
+    _ask_source
 
     echo_task "${baihongse}Executing Pre-Upgrade Process${normal}"
     echo && echo
@@ -323,11 +304,14 @@ function distro_upgrade() {
 
         echo_task "Executing Preparation"
         sed -i "s/$UPGRADE_CODENAME_OLD/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
+        if [[ $UPGRADE_CODENAME == bullseye ]]; then
+            sed -i "s/http:\/\/security.debian.org\/ bullseye\/updates/http:\/\/security.debian.org\/debian-security bullseye-security/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
+        fi
         UPGRADE_CODENAME_OLD=$UPGRADE_CODENAME
         _apt_update & spinner $!
         check_status aptcheck
 
-        if [[ $UPGRADE_CODENAME =~ (buster|bionic|focal) ]]; then
+        if [[ $UPGRADE_CODENAME =~ (buster|bullseye|bionic|focal) ]]; then
             echo_task "Executing APT Full-Upgrade"
             _apt_full_upgrade & spinner $!
             check_status aptcheck
@@ -339,14 +323,6 @@ function distro_upgrade() {
             echo_task "Executing APT Dist-Upgrade"
             _apt_dist_upgrade & spinner $!
             check_status aptcheck
-        fi
-
-        if [[ $force_change_source == yes ]]; then
-            echo_task "Change the Source List${normal}"
-            mirror=de && force_change_source=no
-            _change_source & spinner $!
-            echo -e " ${green}${bold}DONE${normal}" | tee -a "$OutputLOG"
-            sed -i "s/RELEASE/$UPGRADE_CODENAME/g" /etc/apt/sources.list >> "$OutputLOG" 2>&1
         fi
 
     done
@@ -421,32 +397,31 @@ function _oscheck() {
 [[ $only_mirror == 1 ]] && [[ -n $version ]] && { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; }
 
 SysSupport=0
-[[ $CODENAME  ==  focal   ]] && SysSupport=4
-[[ $CODENAME  ==  bionic  ]] && SysSupport=3
-[[ $CODENAME  ==  xenial  ]] && SysSupport=2
-[[ $CODENAME  ==  trusty  ]] && SysSupport=1
-[[ $CODENAME  ==  buster  ]] && SysSupport=4
-[[ $CODENAME  ==  stretch ]] && SysSupport=3
-[[ $CODENAME  ==  jessie  ]] && SysSupport=2
-[[ $CODENAME  ==  wheezy  ]] && SysSupport=1
+[[ $CODENAME  ==  focal    ]] && SysSupport=4
+[[ $CODENAME  ==  bionic   ]] && SysSupport=3
+[[ $CODENAME  ==  xenial   ]] && SysSupport=2
+[[ $CODENAME  ==  trusty   ]] && SysSupport=1
+[[ $CODENAME  ==  bullseye ]] && SysSupport=4
+[[ $CODENAME  ==  buster   ]] && SysSupport=3
+[[ $CODENAME  ==  stretch  ]] && SysSupport=2
+[[ $CODENAME  ==  jessie   ]] && SysSupport=1
 
 if [[ -n $version ]]; then
     count=0
-    [[ $version  ==  focal   ]] && count=4
-    [[ $version  ==  bionic  ]] && count=3
-    [[ $version  ==  xenial  ]] && count=2
-    [[ $version  ==  buster  ]] && count=4
-    [[ $version  ==  stretch ]] && count=3
-    [[ $version  ==  jessie  ]] && count=2
+    [[ $version  ==  focal    ]] && count=4
+    [[ $version  ==  bionic   ]] && count=3
+    [[ $version  ==  xenial   ]] && count=2
+    [[ $version  ==  bullseye ]] && count=4
+    [[ $version  ==  buster   ]] && count=3
+    [[ $version  ==  stretch  ]] && count=2
 
     ((upgrade_version_gap = count - SysSupport))
 
     [[ $upgrade_version_gap == 0 ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
     [[ ${upgrade_version_gap:0:1} == "-" ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
-    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~  (focal|bionic|xenial)  ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
-    [[ $DISTRO == Debian ]] && [[ ! $version =~ (buster|stretch|jessie) ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
+    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~   (focal|bionic|xenial)   ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
+    [[ $DISTRO == Debian ]] && [[ ! $version =~ (bullseye|buster|stretch) ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
 elif [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
-    [[ $CODENAME == wheezy ]] && force_change_source=yes && { echo -e "\nERROR: No mirror could be used to change\n" ; exit 1 ; }
     _only_source_mode
 fi
 [[ $only_upgrade != 1 ]] && [[ -n $mirror ]] && [[ ! $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]] && { echo -e "\nERROR: No such mirror\n" ; exit 1 ; }
