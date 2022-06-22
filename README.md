@@ -47,5 +47,5 @@ bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubunt
 
 盒子源包括 `Online SAS(Only for Online SAS) / Hetzner(Only for Hetzner) / Leaseweb / OVH / Ikoula`
 
-### 支持的系统版本 `Ubuntu 14.04 / 16.04 / 18.04 / 20.04`、`Debian 8 / 9 / 10 / 11` 
+### 支持的系统版本 `Ubuntu 16.04 / 18.04 / 20.04 / 22.04`、`Debian 8 / 9 / 10 / 11` 
 
