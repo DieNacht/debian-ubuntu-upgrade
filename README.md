@@ -10,31 +10,31 @@
 ## Interactive Mode
 
 ```
-bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh)
+bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/DieNacht/debian-ubuntu-upgrade/old-stable(trusty-to-focal)/upgrade.sh)
 ```
 
 ## Interactive Upgrade Mode Without Source Change
 
 ```
-bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --no-mirror-change
+bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/DieNacht/debian-ubuntu-upgrade/old-stable(trusty-to-focal)/upgrade.sh) --no-mirror-change
 ```
 
 ## Interactive Change Source Mode
 
 ```
-bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --only-mirror-change
+bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/DieNacht/debian-ubuntu-upgrade/old-stable(trusty-to-focal)/upgrade.sh) --only-mirror-change
 ```
 
 ## Non-Interactive Upgrade Mode
 
 ```
-bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --version Version_Codename [--mirror Source_Loaction]
+bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/DieNacht/debian-ubuntu-upgrade/old-stable(trusty-to-focal)/upgrade.sh) --version Version_Codename [--mirror Source_Loaction]
 ```
 
 ## Non-Interactive Change Source Mode
 
 ```
-bash <(wget --no-check-certificate -qO- https://github.com/DieNacht/debian-ubuntu-upgrade/raw/master/upgrade.sh) --mirror Source_Loaction
+bash <(wget --no-check-certificate -qO- https://raw.githubusercontent.com/DieNacht/debian-ubuntu-upgrade/old-stable(trusty-to-focal)/upgrade.sh) --mirror Source_Loaction
 ```
 
 ### Mirror目前支持 `官方源 / 教育源 / 国内主机服务商源 / 盒子提供商源`
