@@ -36,9 +36,9 @@ cat_outputlog
 ################################################################################################ Sub Functions
 
 function _SysSupport_to_DisrtoCodename (){
-    [[ $SysSupport == 4  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 20.04" ; UPGRADE_CODENAME=focal   ; }
-    [[ $SysSupport == 3  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic  ; }
-    [[ $SysSupport == 2  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 16.04" ; UPGRADE_CODENAME=xenial  ; }
+    [[ $SysSupport == 4  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 22.04" ; UPGRADE_CODENAME=jammy   ; }
+    [[ $SysSupport == 3  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 20.04" ; UPGRADE_CODENAME=focal   ; }
+    [[ $SysSupport == 2  ]] && [[ $DISTRO == Ubuntu ]] && { UPGRADE_DISTRO="Ubuntu 18.04" ; UPGRADE_CODENAME=bionic  ; }
     [[ $SysSupport == 4  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 11"    ; UPGRADE_CODENAME=bullseye; }
     [[ $SysSupport == 3  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 10"    ; UPGRADE_CODENAME=buster  ; }
     [[ $SysSupport == 2  ]] && [[ $DISTRO == Debian ]] && { UPGRADE_DISTRO="Debian 9"     ; UPGRADE_CODENAME=stretch ; }
@@ -311,10 +311,11 @@ function distro_upgrade() {
         _apt_update & spinner $!
         check_status aptcheck
 
-        if [[ $UPGRADE_CODENAME =~ (buster|bullseye|bionic|focal) ]]; then
+        if [[ $UPGRADE_CODENAME =~ (buster|bullseye|bionic|focal|jammy) ]]; then
             echo_task "Executing APT Full-Upgrade"
             _apt_full_upgrade & spinner $!
             check_status aptcheck
+            [[ $UPGRADE_CODENAME == jammy ]] && echo 'PubkeyAcceptedKeyTypes=+ssh-rsa' >> /etc/ssh/sshd_config
         else
             echo_task "Executing APT Upgrade"
             _apt_upgrade & spinner $!
@@ -397,10 +398,10 @@ function _oscheck() {
 [[ $only_mirror == 1 ]] && [[ -n $version ]] && { echo -e "\nERROR: You already choose to upgrade to $version\n" ; exit 1 ; }
 
 SysSupport=0
-[[ $CODENAME  ==  focal    ]] && SysSupport=4
-[[ $CODENAME  ==  bionic   ]] && SysSupport=3
-[[ $CODENAME  ==  xenial   ]] && SysSupport=2
-[[ $CODENAME  ==  trusty   ]] && SysSupport=1
+[[ $CODENAME  ==  jammy    ]] && SysSupport=4
+[[ $CODENAME  ==  focal    ]] && SysSupport=3
+[[ $CODENAME  ==  bionic   ]] && SysSupport=2
+[[ $CODENAME  ==  xenial   ]] && SysSupport=1
 [[ $CODENAME  ==  bullseye ]] && SysSupport=4
 [[ $CODENAME  ==  buster   ]] && SysSupport=3
 [[ $CODENAME  ==  stretch  ]] && SysSupport=2
@@ -408,9 +409,9 @@ SysSupport=0
 
 if [[ -n $version ]]; then
     count=0
-    [[ $version  ==  focal    ]] && count=4
-    [[ $version  ==  bionic   ]] && count=3
-    [[ $version  ==  xenial   ]] && count=2
+    [[ $version  ==  jammy    ]] && count=4
+    [[ $version  ==  focal    ]] && count=3
+    [[ $version  ==  bionic   ]] && count=2
     [[ $version  ==  bullseye ]] && count=4
     [[ $version  ==  buster   ]] && count=3
     [[ $version  ==  stretch  ]] && count=2
@@ -419,7 +420,7 @@ if [[ -n $version ]]; then
 
     [[ $upgrade_version_gap == 0 ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
     [[ ${upgrade_version_gap:0:1} == "-" ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
-    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~   (focal|bionic|xenial)   ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
+    [[ $DISTRO == Ubuntu ]] && [[ ! $version =~   (jammy|focal|bionic)   ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
     [[ $DISTRO == Debian ]] && [[ ! $version =~ (bullseye|buster|stretch) ]] && { echo -e "\nERROR: It's impossible to upgrade to $version\n" ; exit 1 ; }
 elif [[ -n $mirror ]] && [[ $mirror =~  (official|us|au|cn|fr|de|jp|ru|uk|tuna|ustc|aliyun|163|huawei|mit|hz|ol|ovh|lw|ik)  ]]; then
     _only_source_mode
@@ -432,4 +433,3 @@ fi
 [[ $EUID != 0 ]] && { echo -e "\n${bold}${red}Naive! I think this young man will not be able to run this script without root privileges.${normal}\n" ; exit 1 ; }
 _oscheck
 [[ $upgradable == 1 ]] && _ask_upgrade
-
